@@ -7,7 +7,7 @@ public class UmsMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column(name = "username",nullable = false,length = 64)
     private String username;

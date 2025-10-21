@@ -2,6 +2,10 @@ package com.aesp.aesp_jpa.entity;
 
 
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -10,10 +14,13 @@ import java.time.LocalDateTime;
  * Entity class for umsadmin table
  */
 @Entity
+@Getter
+@Setter
+@ToString
 public class UmsAdmin {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private BigInteger id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
 
     @Column(name = "username" ,nullable = false,length = 64)

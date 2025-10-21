@@ -11,7 +11,8 @@
 
     <modules>
         <module>aesp-admin</module>
-            <module>aesp-jpa</module>
+        <module>aesp-jpa</module>
+        <module>aesp-portal</module>
     </modules>
 
     <parent>
@@ -20,7 +21,23 @@
         <version>2.7.5</version>
         <relativePath/>
     </parent>
+    <dependencyManagement>
+        <dependencies>
 
+            <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>3.0.2</version>
+            </dependency>
+        </dependencies>
+        <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
 
+    </dependencyManagement>
 
 </project>

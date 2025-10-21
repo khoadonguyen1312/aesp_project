@@ -1,11 +1,14 @@
 package com.aesp.aesp_jpa.entity;
 
-import org.springframework.context.annotation.Primary;
+
 
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
+/**
+ * Entity class for umsadmin table
+ */
 @Entity
 public class UmsAdmin {
     @Id

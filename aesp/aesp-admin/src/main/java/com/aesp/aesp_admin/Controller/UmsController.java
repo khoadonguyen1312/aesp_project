@@ -5,6 +5,7 @@ import com.aesp.aesp_admin.Dto.UmsAdminParam;
 import com.aesp.aesp_admin.Service.UmsAdminService;
 import com.aesp.aesp_jpa.entity.UmsAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +16,16 @@ public class UmsController {
     @Autowired
     private UmsAdminService umsAdminService;
 
-    @PostMapping("/regiser")
+    @PostMapping("/register")
 
     public ResponseEntity<UmsAdmin> register(@Validated @RequestBody UmsAdminParam umsAdminParam) {
 
         UmsAdmin umsAdmin = umsAdminService.register(umsAdminParam);
-        return ResponseEntity.ok(umsAdmin);
+        if (umsAdmin != null) {
+            return ResponseEntity.ok(umsAdmin);
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
     }
 
     @GetMapping("/test")

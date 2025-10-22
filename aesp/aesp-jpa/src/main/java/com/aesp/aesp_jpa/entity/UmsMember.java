@@ -16,7 +16,7 @@ public class UmsMember {
     @Column(name = "email",nullable = false,length = 64)
     private  String email;
 
-    @Column(name = "account_type",columnDefinition = "VARCHAR(64) DEFAULT normal")
+    @Column(name = "account_type",columnDefinition = "VARCHAR(64) DEFAULT 'normal'")
     private  String account_type;
 
 

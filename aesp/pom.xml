@@ -13,6 +13,7 @@
         <module>aesp-admin</module>
         <module>aesp-jpa</module>
         <module>aesp-portal</module>
+        <module>aesp-common</module>
     </modules>
 
     <parent>

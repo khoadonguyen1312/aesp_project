@@ -6,14 +6,20 @@ import com.aesp.aesp_admin.Service.UmsAdminService;
 import com.aesp.aesp_jpa.entity.UmsAdmin;
 import com.aesp.aesp_jpa.respository.UmsAdminRepository;
 import com.fasterxml.jackson.databind.util.BeanUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class UmsAdminServiceImpl implements UmsAdminService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UmsAdminServiceImpl.class);
     @Autowired
     private UmsAdminRepository umsAdminRepository;
+    private UmsAdmin umsAdmin;
 
     @Override
     public UmsAdmin findByUsername(String username) {
@@ -27,11 +33,19 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Override
     public UmsAdmin register(UmsAdminParam umsAdminParam) {
+        logger.debug("admin create account");
         UmsAdmin umsAdmin = new UmsAdmin();
         BeanUtils.copyProperties(umsAdminParam, umsAdmin);
-        System.out.println(umsAdmin.getEmail());
+
+        if (umsAdminRepository.existsByUsername(umsAdmin.getUsername()) || umsAdminRepository.existsByEmail(umsAdmin.getEmail())) {
+            logger.debug("usernname hoặc email tồn tại");
+            return null;
+        }
         umsAdminRepository.save(umsAdmin);
-        return null;
+        logger.debug("save umsadmin with username :" + umsAdmin.getUsername());
+
+
+        return umsAdmin;
     }
 
     @Override

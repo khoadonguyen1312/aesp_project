@@ -8,16 +8,20 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="aesp-jpa" />
-        <module name="aesp-admin" />
         <module name="aesp-portal" />
+        <module name="aesp-common" />
+        <module name="aesp-admin" />
+        <module name="aesp-security" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="aesp-admin" options="-parameters" />
+      <module name="aesp-common" options="-parameters" />
       <module name="aesp-jpa" options="-parameters" />
       <module name="aesp-portal" options="-parameters" />
+      <module name="aesp-security" options="-parameters" />
     </option>
   </component>
 </project>

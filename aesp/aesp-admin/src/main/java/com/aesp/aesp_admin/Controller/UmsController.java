@@ -1,6 +1,7 @@
 package com.aesp.aesp_admin.Controller;
 
 
+import api.CommonResult;
 import com.aesp.aesp_admin.Dto.UmsAdminParam;
 import com.aesp.aesp_admin.Service.UmsAdminService;
 import com.aesp.aesp_jpa.entity.UmsAdmin;
@@ -12,19 +13,19 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
+
 public class UmsController {
     @Autowired
     private UmsAdminService umsAdminService;
 
     @PostMapping("/register")
-
-    public ResponseEntity<UmsAdmin> register(@Validated @RequestBody UmsAdminParam umsAdminParam) {
+    public CommonResult<UmsAdmin> register(@Validated @RequestBody UmsAdminParam umsAdminParam) {
 
         UmsAdmin umsAdmin = umsAdminService.register(umsAdminParam);
         if (umsAdmin != null) {
-            return ResponseEntity.ok(umsAdmin);
+            return CommonResult.success(umsAdmin,"tạo thành công tài khoản admin");
         } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+            return CommonResult.failed("tạo tài khoản admin không thành công .Lý do :email hoặc username đã tồn tại trong db");
         }
     }
 

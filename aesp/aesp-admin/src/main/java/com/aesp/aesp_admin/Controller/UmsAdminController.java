@@ -2,12 +2,14 @@ package com.aesp.aesp_admin.Controller;
 
 
 import api.CommonResult;
+import cn.hutool.core.util.StrUtil;
 import com.aesp.aesp_admin.Dto.UmsAdminParam;
 import com.aesp.aesp_admin.Service.UmsAdminService;
 
 import com.aesp.aesp_admin.bo.DynamicUserDetails;
 import com.aesp.aesp_jpa.entity.UmsMember;
 import com.aesp.aesp_security.util.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +33,13 @@ public class UmsAdminController {
         logger.info("đang bắt đầu đăng ký cho admin");
         UmsMember umsMember = umsAdminService.register(umsAdminParam);
         if (umsMember == null) {
+            logger.debug("không tạo được");
             return CommonResult.failed("không tạo được tài khoản bị trùng user hoặc email");
         }
+        logger.debug("tạo được");
         DynamicUserDetails dynamicUserDetails = new DynamicUserDetails(umsMember);
         String token = jwtTokenUtil.generateToken(dynamicUserDetails);
+        logger.debug(token);
         return CommonResult.success(token);
     }
 
@@ -44,4 +49,11 @@ public class UmsAdminController {
         return "Test";
     }
 
+    @GetMapping("/login")
+    public String login(String token) {
+
+    return jwtTokenUtil.getClaimsFromToken(token).getSubject();
+
+
+    }
 }

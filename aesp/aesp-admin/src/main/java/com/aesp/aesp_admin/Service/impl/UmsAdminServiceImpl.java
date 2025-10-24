@@ -13,12 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Service
 public class UmsAdminServiceImpl implements UmsAdminService {
 
-    private static  final Logger logger = LoggerFactory.getLogger(UmsAdminService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UmsAdminService.class);
     @Autowired
     private UmsMemberRepository umsMemberRepository;
+
     @Override
     public UmsMember findByUsername(String username) {
         return umsMemberRepository.findByusername(username);
@@ -31,24 +35,27 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Override
     public UmsMember register(UmsAdminParam umsAdminParam) {
-        UmsMember umsMember =null;
-        BeanUtils.copyProperties(umsAdminParam,umsMember);
-        if(umsMemberRepository.existsByUsername(umsMember.getUsername())|| umsMemberRepository.existsByEmail(umsMember.getEmail()))
-        {
+        logger.debug("service admin đang đăng ký tài khoản");
+        UmsMember umsMember = new UmsMember();
+        BeanUtils.copyProperties(umsAdminParam, umsMember);
+        logger.debug(umsMember.getUsername());
+        if (umsMemberRepository.existsByUsername(umsMember.getUsername()) || umsMemberRepository.existsByEmail(umsMember.getEmail())) {
             logger.debug("khong save thanh cong do bi trung ten hoac email");
             return null;
         }
-       umsMemberRepository.save(umsMember);
+        umsMember.setCreate_at(LocalDateTime.now());
+        umsMember.setLogin_time(LocalDateTime.now());
+        umsMember.setUmsRoles(se);
+        umsMemberRepository.save(umsMember);
         logger.debug("save thanh cong admin user vao db");
-        return  umsMember;
+        return umsMember;
     }
 
     @Override
     public int update(int id, UmsMember umsAdmin) {
-        if(umsMemberRepository.existsById(id))
-        {
+        if (umsMemberRepository.existsById(id)) {
             umsMemberRepository.save(umsAdmin);
-            logger.debug("update thanh cong thong tin cho admin co ten"+umsAdmin.getUsername());
+            logger.debug("update thanh cong thong tin cho admin co ten" + umsAdmin.getUsername());
             return 1;
         }
         return 0;
@@ -56,13 +63,12 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Override
     public int delete(int id) {
-     if(umsMemberRepository.existsById(id))
-     {
-         umsMemberRepository.deleteById(id);
-         logger.debug("xóa thành công user admin với id");
-                 return 1;
-     }
-     return 0;
+        if (umsMemberRepository.existsById(id)) {
+            umsMemberRepository.deleteById(id);
+            logger.debug("xóa thành công user admin với id");
+            return 1;
+        }
+        return 0;
     }
 
     @Override

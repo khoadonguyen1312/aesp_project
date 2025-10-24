@@ -14,6 +14,10 @@ public class CommonSecurityConfig {
     }
 
 
+    @Bean
+    public JwtTokenUtil jwtTokenUtil() {
+        return new JwtTokenUtil();
+    }
 
     @Bean
     public DynamicAccessDeniedHandler dynamicAccessDeniedHandler() {

@@ -45,10 +45,11 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
+		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
-			<scope>provided</scope>
+			<artifactId>jjwt</artifactId>
+
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
 		<dependency>

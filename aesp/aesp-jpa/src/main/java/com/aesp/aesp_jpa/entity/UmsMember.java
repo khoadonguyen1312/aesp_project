@@ -45,9 +45,9 @@ public class UmsMember {
 
         private LocalDateTime login_time;
 
-        @Column(name = "status" ,columnDefinition = "INT DEFAULT 1")
+        @Column(name = "status")
 
-        private  int status;
+        private  int status=1;
 
 
 

@@ -5,11 +5,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+@Component
 public class JwtTokenUtil {
     private String secretkey = "dz3DqaZ7AG6g4JTLsgKxYMUvhYk2GSqyG9WmUb17S6YmFwcZAtvi6jzidEtAtXubHeu5iJrG8paUBwwoaGgKl3";
     private long expiration = 60;

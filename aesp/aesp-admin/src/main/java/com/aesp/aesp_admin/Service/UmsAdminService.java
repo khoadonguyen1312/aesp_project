@@ -2,25 +2,31 @@ package com.aesp.aesp_admin.Service;
 
 import com.aesp.aesp_admin.Dto.UmsAdminParam;
 import com.aesp.aesp_admin.Dto.UpdatePasswordParam;
-import com.aesp.aesp_jpa.entity.UmsAdmin;
+
+import com.aesp.aesp_jpa.entity.UmsMember;
+import org.springframework.data.domain.Page;
 
 public interface UmsAdminService {
-    UmsAdmin findByUsername(String username);
+    UmsMember findByUsername(String username);
 
     String login(String username,String password);
 
-   UmsAdmin register(UmsAdminParam umsAdminParam);
+   UmsMember register(UmsAdminParam umsAdminParam);
 
-   int update(String id,UmsAdmin umsAdmin);
+   int update(int id,UmsMember umsAdmin);
 
-   int delete(String id);
+   int delete(int id);
 
-   int deleteMemberAccount(String id);
+   int deleteMemberAccount(int id);
 
-
-   int updatePassword(Long id, UpdatePasswordParam updatePasswordParam);
+    int deleteUserById(int id);
+   int updatePassword(int id, UpdatePasswordParam updatePasswordParam);
 
    void logout();
+
+   Page<UmsMember> listUmsLeaner(int page);
+
+   Page<UmsMember> listUmsMentor(int page);
 
 
 }

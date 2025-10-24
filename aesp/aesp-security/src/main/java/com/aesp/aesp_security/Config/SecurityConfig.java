@@ -21,43 +21,74 @@ public class SecurityConfig {
     private  DynamicAccessDeniedHandler dynamicAccessDeniedHandler;
     @Autowired
     private DynamicAuthenticationEntryPoint dynamicAuthenticationEntryPoint;
+//    @Bean
+//    SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws  Exception{
+//        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity
+//                .authorizeRequests();
+//
+//        for(String url: ignoreUrlConfig.getUrls())
+//        {
+//            registry.antMatchers(url).permitAll();
+////            bỏ qua xác thực cho các url
+//        }
+//        registry.antMatchers(HttpMethod.OPTIONS).permitAll();
+//        // cho phép các request có phương thức option đi qua
+//        registry.antMatchers("/admin")
+//                        .hasRole("ADMIN_ROLE");
+//        registry.antMatchers("/MENTOR").hasRole("MENTOR_ROLE");
+//        registry.and()
+//                .authorizeRequests(
+//                )
+//                .anyRequest()
+//                .authenticated()
+//                // xác thực bất kỳ request nào
+//                .and()
+//                .csrf()
+//                .disable()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                /*
+//                tắt csrf
+//                tắt tự tạo session
+//                 */
+//                .and()
+//                .exceptionHandling()
+//                .accessDeniedHandler(dynamicAccessDeniedHandler)
+//                .authenticationEntryPoint(dynamicAuthenticationEntryPoint)
+//
+//
+//
+//                ;
+//                return httpSecurity.build();
+//
+//    }
+
+
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws  Exception{
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity
-                .authorizeRequests();
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws  Exception
+    {
 
         for(String url: ignoreUrlConfig.getUrls())
         {
-            registry.antMatchers(url).permitAll();
-//            bỏ qua xác thực cho các url
+            httpSecurity.authorizeRequests().antMatchers(url).permitAll();
         }
-        registry.antMatchers(HttpMethod.OPTIONS).permitAll();
-        // cho phép các request có phương thức option đi qua
 
-        registry.and()
-                .authorizeRequests(
-                )
-                .anyRequest()
-                .authenticated()
-                // xác thực bất kỳ request nào
-                .and()
-                .csrf()
-                .disable()
+
+
+        httpSecurity.authorizeRequests().antMatchers("/admin/").hasRole("ADMIN_ROLE");
+        httpSecurity.authorizeRequests().antMatchers("/memtor").hasRole("MENTOR_ROLE");
+
+        httpSecurity.csrf().disable()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                /*
-                tắt csrf
-                tắt tự tạo session
-                 */
-                .and()
-                .exceptionHandling()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        httpSecurity.exceptionHandling()
                 .accessDeniedHandler(dynamicAccessDeniedHandler)
-                .authenticationEntryPoint(dynamicAuthenticationEntryPoint)
+                .authenticationEntryPoint(dynamicAuthenticationEntryPoint);
+
+        return httpSecurity.build();
 
 
-
-                ;
-                return httpSecurity.build();
 
     }
 }

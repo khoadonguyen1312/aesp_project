@@ -5,6 +5,7 @@ import com.aesp.aesp_admin.Dto.UmsAdminParam;
 import com.aesp.aesp_admin.Dto.UpdatePasswordParam;
 import com.aesp.aesp_admin.Service.UmsAdminService;
 import com.aesp.aesp_jpa.entity.UmsMember;
+import com.aesp.aesp_jpa.entity.UmsRole;
 import com.aesp.aesp_jpa.respository.UmsMemberRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class UmsAdminServiceImpl implements UmsAdminService {
@@ -45,7 +48,9 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         }
         umsMember.setCreate_at(LocalDateTime.now());
         umsMember.setLogin_time(LocalDateTime.now());
-        umsMember.setUmsRoles(se);
+        Set<UmsRole> umsRoles =new HashSet<>();
+        umsRoles.add(new UmsRole("1","ADMIN"));
+umsMember.setUmsRoles();
         umsMemberRepository.save(umsMember);
         logger.debug("save thanh cong admin user vao db");
         return umsMember;

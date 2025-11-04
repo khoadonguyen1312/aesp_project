@@ -20,8 +20,12 @@ logging:
   level:
     root: INFO
     com.aesp: DEBUG
+
 secure:
+#  cac url duoc security bo qua
   ignored:
     urls:
       - /admin/register
       - /admin/login
+      - /user/register
+      -

@@ -39,7 +39,6 @@ public class SecurityConfig {
         httpSecurity.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN");
         httpSecurity.authorizeRequests().antMatchers("/mentor/**").hasRole("MENTOR");
 
-
         httpSecurity.authorizeRequests().anyRequest().authenticated(); // bat cu request nao cung phai xac thuc
         httpSecurity.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

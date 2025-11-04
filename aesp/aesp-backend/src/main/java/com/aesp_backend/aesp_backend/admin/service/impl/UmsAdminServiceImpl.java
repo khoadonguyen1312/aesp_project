@@ -5,6 +5,7 @@ import com.aesp_backend.aesp_backend.admin.UmsAdminParam;
 import com.aesp_backend.aesp_backend.admin.dto.UmsAdminInfoResponse;
 import com.aesp_backend.aesp_backend.admin.dto.UpdatePasswordParam;
 import com.aesp_backend.aesp_backend.admin.service.UmsAdminService;
+import com.aesp_backend.aesp_backend.jpa.cache.UmsRoleCache;
 import com.aesp_backend.aesp_backend.jpa.entity.UmsMember;
 import com.aesp_backend.aesp_backend.jpa.entity.UmsRole;
 import com.aesp_backend.aesp_backend.jpa.respository.UmsMemberRepository;
@@ -36,6 +37,9 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         return "";
     }
 
+    @Autowired
+    private UmsRoleCache umsRoleCache;
+
     @Override
     public UmsAdminInfoResponse info(int id) {
         logger.debug("tim info admin cho user voi id :" + id);
@@ -63,7 +67,10 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         umsMember.setCreate_at(LocalDateTime.now());
         umsMember.setLogin_time(LocalDateTime.now());
         Set<UmsRole> umsRoles = new HashSet<>();
-
+        umsRoles.add(umsRoleCache.getRole("ADMIN"));
+        umsRoles.add(umsRoleCache.getRole("USER"));
+        umsRoles.add(umsRoleCache.getRole("MENTOR"));
+        umsMember.setUmsRoles(umsRoles);
         umsMemberRepository.save(umsMember);
         logger.debug("save thanh cong admin user vao db");
         return umsMember;
@@ -110,12 +117,12 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     }
 
     @Override
-    public Page<UmsMember> listUmsLeaner(int page) {
+    public Page<UmsMember> listUmsLeaner(int page, int size) {
         return null;
     }
 
     @Override
-    public Page<UmsMember> listUmsMentor(int page) {
+    public Page<UmsMember> listUmsMentor(int page, int size) {
         return null;
     }
 }

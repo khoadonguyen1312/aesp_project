@@ -8,12 +8,17 @@ import com.aesp_backend.aesp_backend.admin.service.UmsAdminService;
 import com.aesp_backend.aesp_backend.common.api.CommonResult;
 import com.aesp_backend.aesp_backend.jpa.entity.UmsMember;
 import com.aesp_backend.aesp_backend.security.JwtTokenUtil;
+import lombok.Data;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Pageable;
 
 @RestController
 @RequestMapping("/admin")
@@ -47,13 +52,19 @@ public class UmsAdminController {
         return "Test";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/info")
     public CommonResult<UmsAdminInfoResponse> info(@RequestParam int id) {
         UmsAdminInfoResponse umsAdminInfoResponse = umsAdminService.info(id);
-        return umsAdminInfoResponse == null
-                ? CommonResult.failed("không tìm thấy tài khoản trong hệ thống")
-                : CommonResult.success(umsAdminInfoResponse);
+        return umsAdminInfoResponse == null ? CommonResult.failed("không tìm thấy tài khoản trong hệ thống") : CommonResult.success(umsAdminInfoResponse);
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/list-user")
+    public  CommonResult<Data> list_user(@RequestParam int page,@RequestParam int size)
+    {
+        return null;
 
+
+    }
 
 }

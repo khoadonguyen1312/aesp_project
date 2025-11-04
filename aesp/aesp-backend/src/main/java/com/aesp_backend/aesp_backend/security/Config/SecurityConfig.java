@@ -37,15 +37,13 @@ public class SecurityConfig {
 
 
         httpSecurity.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN");
-        httpSecurity.authorizeRequests().antMatchers("/memtor/**").hasRole("MENTOR");
+        httpSecurity.authorizeRequests().antMatchers("/mentor/**").hasRole("MENTOR");
 
-        httpSecurity.csrf().disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        httpSecurity.exceptionHandling()
-                .accessDeniedHandler(dynamicAccessDeniedHandler)
-                .authenticationEntryPoint(dynamicAuthenticationEntryPoint);
+        httpSecurity.authorizeRequests().anyRequest().authenticated(); // bat cu request nao cung phai xac thuc
+        httpSecurity.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        httpSecurity.exceptionHandling().accessDeniedHandler(dynamicAccessDeniedHandler).authenticationEntryPoint(dynamicAuthenticationEntryPoint);
         httpSecurity.addFilterBefore(jwtAuthencationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
 

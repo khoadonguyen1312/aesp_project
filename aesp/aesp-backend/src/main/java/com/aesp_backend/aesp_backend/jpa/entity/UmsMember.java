@@ -1,7 +1,6 @@
 package com.aesp_backend.aesp_backend.jpa.entity;
 
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +22,7 @@ public class UmsMember {
     @Column(name = "username", nullable = false, length = 64)
     private String username;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -32,6 +31,12 @@ public class UmsMember {
     private Set<UmsRole> umsRoles;
 
 
+    @OneToOne
+    @JoinColumn(
+            name = "data_id",
+            referencedColumnName = "id"
+    )
+    private UmsUserData umsUserData;
     @Column(name = "password", nullable = false, length = 64)
     private String password;
 

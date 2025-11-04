@@ -26,9 +26,9 @@ public interface UmsAdminService {
 
     void logout();
 
-    Page<UmsMember> listUmsLeaner(int page);
+    Page<UmsMember> listUmsLeaner(int page,int size);
 
-    Page<UmsMember> listUmsMentor(int page);
+    Page<UmsMember> listUmsMentor(int page,int size);
 
 
 }

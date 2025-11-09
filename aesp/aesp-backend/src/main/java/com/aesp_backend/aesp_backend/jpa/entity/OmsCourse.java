@@ -14,12 +14,12 @@ public class OmsCourse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToMany(mappedBy = "omscourse")
+    @OneToMany(mappedBy = "omsCourse")
     private List<OmsLeason> omsLeasons;
 
-    private List<String> course_content;
-    private List<String> required_for_learning;
+    private String course_content;
+    private String required_for_learning;
 
-    private String describe;
+    private String description;
 
 }

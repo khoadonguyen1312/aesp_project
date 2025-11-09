@@ -34,7 +34,7 @@ public class DynamicUserDetail implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return umsMember.getStatus() == 0;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DynamicUserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return umsMember.getStatus() == 1;
     }
 
 

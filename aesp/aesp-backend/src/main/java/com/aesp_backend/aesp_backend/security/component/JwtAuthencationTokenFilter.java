@@ -43,9 +43,16 @@ public class JwtAuthencationTokenFilter extends OncePerRequestFilter {
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = (UserDetails) dynamicUserDetailServices.loadUserByUsername(username);
+
                 if (jwtTokenUtil.validateToken(token, userDetails)) {
                     logger.debug("token hợp lệ");
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null
+                    // kiem tra xem status tai khoan co bi khoa khong
+
+                    if (!userDetails.isEnabled()) {
+                        send_response_for_lockAccount(response, "tai khoan da bi khoa");
+                        return;
+                    }
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, token
 
                             , userDetails.getAuthorities());
                     //ép chi tiết thông tin từ client lấy từ request cho authencation
@@ -58,5 +65,9 @@ public class JwtAuthencationTokenFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private void send_response_for_lockAccount(HttpServletResponse httpServletResponse, String message) throws IOException {
+
     }
 }

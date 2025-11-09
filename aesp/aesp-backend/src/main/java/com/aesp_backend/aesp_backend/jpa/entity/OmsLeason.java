@@ -14,7 +14,7 @@ public class OmsLeason {
 
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "omscourse", nullable = true)
+    @JoinColumn(name = "course_id", nullable = true)
     private OmsCourse omsCourse;
     private int order_index;
     private String description;

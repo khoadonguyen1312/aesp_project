@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class JwtTokenUtil {
     private String secretkey = "dz3DqaZ7AG6g4JTLsgKxYMUvhYk2GSqyG9WmUb17S6YmFwcZAtvi6jzidEtAtXubHeu5iJrG8paUBwwoaGgKl3";
-    private long expiration = 60*60;
+    private long expiration = 60 * 60;
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_CREATED = "created";
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
@@ -44,7 +44,7 @@ public class JwtTokenUtil {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            logger.error("có lỗi khi get claims"+e.toString());
+            logger.error("có lỗi khi get claims" + e.toString());
         }
         return claims;
     }
@@ -126,5 +126,7 @@ public class JwtTokenUtil {
         }
     }
 
-
+    public String getROLEfromToken(String token) {
+        return "ADMIN";
+    }
 }

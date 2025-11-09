@@ -1,7 +1,6 @@
 package com.aesp_backend.aesp_backend.jpa.entity;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.Getter;
 import lombok.Setter;
 

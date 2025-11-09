@@ -9,11 +9,13 @@ import com.aesp_backend.aesp_backend.jpa.cache.UmsRoleCache;
 import com.aesp_backend.aesp_backend.jpa.entity.UmsMember;
 import com.aesp_backend.aesp_backend.jpa.entity.UmsRole;
 import com.aesp_backend.aesp_backend.jpa.respository.UmsMemberRepository;
+import org.apache.catalina.core.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -98,7 +100,14 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Override
     public int deleteMemberAccount(int id) {
-        return 1;
+        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
+        if (umsMember != null) {
+            umsMemberRepository.delete(umsMember);
+            logger.debug("xoa thanh cong UmsMember voi id: " + umsMember.getId() + "voi username: " + umsMember.getUsername());
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override
@@ -124,5 +133,53 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     @Override
     public Page<UmsMember> listUmsMentor(int page, int size) {
         return null;
+    }
+
+    @Override
+    public int lock_member(int id) {
+
+        logger.debug("service dang bat dau lock tai khoan member");
+        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
+        if (umsMember == null) {
+            return 0;
+        }
+        if (umsMember.getStatus() == 1) {
+            umsMember.setStatus(0);
+            return 1;
+        }
+
+        return 0;
+
+
+    }
+
+    @Override
+    public int unlock_member(int id) {
+        logger.debug("dang bat dau unlock cho tai khoan ");
+
+        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
+        if (umsMember == null) {
+            return 0;
+
+        }
+        if (umsMember.getStatus() == 0) {
+            umsMember.setStatus(1);
+            return 1;
+        }
+        return 0;
+
+
+    }
+
+    @Override
+    public int update_password(int id, String password) {
+        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
+
+        if (umsMember == null) {
+            return 0;
+        }
+        umsMember.setPassword(password);
+        umsMemberRepository.save(umsMember);
+        return 1;
     }
 }

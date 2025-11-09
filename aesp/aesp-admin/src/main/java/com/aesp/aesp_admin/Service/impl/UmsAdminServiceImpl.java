@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -97,6 +98,7 @@ umsMember.setUmsRoles();
     }
 
     @Override
+<<<<<<< HEAD
     public Page<UmsMember> listUmsLeaner(int page) {
         return null;
     }
@@ -105,4 +107,9 @@ umsMember.setUmsRoles();
     public Page<UmsMember> listUmsMentor(int page) {
         return null;
     }
+=======
+    public List<UmsAdmin> getAllAdmins() {
+    return umsAdminRepository.findAll();
+    } 
+>>>>>>> 7d306dd3d403691bfdb7b893956336f9a1a35561
 }

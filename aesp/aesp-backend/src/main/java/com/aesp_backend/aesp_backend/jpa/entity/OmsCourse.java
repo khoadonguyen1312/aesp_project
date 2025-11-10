@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+
 public class OmsCourse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,10 +17,10 @@ public class OmsCourse {
     private String name;
     @OneToMany(mappedBy = "omsCourse")
     private List<OmsLeason> omsLeasons;
-
+    private byte[] thumb;
     private String course_content;
     private String required_for_learning;
-
+    private byte video;
     private String description;
 
 }

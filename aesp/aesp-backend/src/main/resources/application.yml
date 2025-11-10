@@ -28,4 +28,6 @@ secure:
       - /admin/register
       - /admin/login
       - /user/register
+      - /mentor/register
+      - /mentor/login
       - /token/refresh-token

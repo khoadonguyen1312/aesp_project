@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -21,4 +22,7 @@ public class OmsLeason {
     private String title;
     private byte[] video;
     private byte[] pdf;
+    @ManyToMany
+    @JoinTable(name = "leason_vocabulary", joinColumns = @JoinColumn(name = "leason_id"), inverseJoinColumns = @JoinColumn(name = "vocabulary_id"))
+    private Set<OmsVocabulary> omsVocabulary;
 }

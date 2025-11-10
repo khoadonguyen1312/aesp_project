@@ -7,11 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class UmsAdminUpdateParam {
+
+public class LoginRefeshTokenParam {
 
     private String username;
-
-    private String email;
-
-
+    private String password;
 }

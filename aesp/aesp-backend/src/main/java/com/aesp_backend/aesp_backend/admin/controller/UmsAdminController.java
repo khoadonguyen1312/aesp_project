@@ -10,18 +10,16 @@ import com.aesp_backend.aesp_backend.common.api.CommonResult;
 import com.aesp_backend.aesp_backend.jpa.entity.UmsMember;
 import com.aesp_backend.aesp_backend.security.JwtTokenUtil;
 import lombok.Data;
-import lombok.Getter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 
 @RestController
 @RequestMapping("/admin")
@@ -124,7 +122,7 @@ public class UmsAdminController {
      * @return
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/lock-member")
+    @GetMapping("/unlock-member")
     public CommonResult<String> unlock_member(@RequestParam int id) {
         int unlock = umsAdminService.unlock_member(id);
         if (unlock == 1) {
@@ -149,7 +147,6 @@ public class UmsAdminController {
 
         return CommonResult.failed("khong doi duoc password");
     }
-
 
 
 }

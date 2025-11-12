@@ -20,9 +20,14 @@ public class OmsLeason {
     private int order_index;
     private String description;
     private String title;
-    private byte[] video;
+
     private byte[] pdf;
-    @ManyToMany
-    @JoinTable(name = "leason_vocabulary", joinColumns = @JoinColumn(name = "leason_id"), inverseJoinColumns = @JoinColumn(name = "vocabulary_id"))
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "leason_vocabulary",
+            joinColumns = @JoinColumn(name = "leason_id"),
+            inverseJoinColumns = @JoinColumn(name = "vocabulary_id")
+    )
     private Set<OmsVocabulary> omsVocabulary;
+
 }

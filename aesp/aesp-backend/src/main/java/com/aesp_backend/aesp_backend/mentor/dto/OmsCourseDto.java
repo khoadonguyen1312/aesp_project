@@ -13,14 +13,14 @@ public class OmsCourseDto {
     private byte[] thumb;
     private String courseContent;
     private String requiredForLearning;
-    private byte video;
+
     private String description;
     private List<OmsLeasonDto> leasons;
 }
 
 
 //{
-
+//
 //        "name": "English Speaking Mastery",
 //        "thumb": "iVBORw0KGgoAAAANSUhEUgAA...",
 //        "courseContent": "This course includes 10 lessons covering daily English conversations.",
@@ -29,7 +29,7 @@ public class OmsCourseDto {
 //        "description": "A full guide to mastering spoken English with real-life examples.",
 //        "leasons": [
 //        {
-
+//
 //        "orderIndex": 1,
 //        "description": "Introduction to greetings and self-introduction in English.",
 //        "title": "Lesson 1: Greetings",
@@ -37,7 +37,7 @@ public class OmsCourseDto {
 //        "pdf": "JVBERi0xLjQKJcfs...",
 //        "vocabularies": [
 //        {
-
+//
 //        "vocabulary": "Hello",
 //        "mean": "Xin chào",
 //        "noun": "Interjection",
@@ -45,7 +45,7 @@ public class OmsCourseDto {
 //        "audio": "UklGRlIAAABXQVZFZm10IBAAAAABAAEA..."
 //        },
 //        {
-
+//
 //        "vocabulary": "Good morning",
 //        "mean": "Chào buổi sáng",
 //        "noun": "Phrase",
@@ -55,7 +55,7 @@ public class OmsCourseDto {
 //        ]
 //        },
 //        {
-
+//
 //        "orderIndex": 2,
 //        "description": "Learn how to introduce yourself with confidence.",
 //        "title": "Lesson 2: Introducing Yourself",

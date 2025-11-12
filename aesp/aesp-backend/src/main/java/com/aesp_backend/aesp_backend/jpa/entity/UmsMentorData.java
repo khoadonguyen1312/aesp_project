@@ -23,8 +23,9 @@ public class UmsMentorData {
 
     private String fullname;
 
-    private int phone_number;
+    private String phone_number;
 
     private String bio;
 
 }
+ 

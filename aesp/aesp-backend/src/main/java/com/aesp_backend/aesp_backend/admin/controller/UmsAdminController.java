@@ -10,13 +10,10 @@ import com.aesp_backend.aesp_backend.common.api.CommonResult;
 import com.aesp_backend.aesp_backend.jpa.entity.UmsMember;
 import com.aesp_backend.aesp_backend.security.JwtTokenUtil;
 import lombok.Data;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.security.access.prepost.PreAuthorize;
-
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

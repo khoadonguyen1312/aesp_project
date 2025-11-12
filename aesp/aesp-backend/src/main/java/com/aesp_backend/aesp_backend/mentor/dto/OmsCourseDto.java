@@ -1,7 +1,12 @@
 package com.aesp_backend.aesp_backend.mentor.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 public class OmsCourseDto {
 
     private String name;

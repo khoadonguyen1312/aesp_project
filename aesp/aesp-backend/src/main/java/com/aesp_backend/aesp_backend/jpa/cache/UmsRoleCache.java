@@ -5,10 +5,7 @@ import com.aesp_backend.aesp_backend.jpa.respository.UmsRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class UmsRoleCache {
@@ -42,5 +39,26 @@ public class UmsRoleCache {
             }
         }
         return role;
+    }
+
+    public Set<UmsRole> ADMIN_ROLE() {
+        Set<UmsRole> roles = new HashSet<>();
+        roles.add(this.getRole("ADMIN"));
+        roles.add(this.getRole("USER"));
+        return roles;
+    }
+
+    public Set<UmsRole> USER_ROLE() {
+        Set<UmsRole> roles = new HashSet<>();
+
+        roles.add(this.getRole("USER"));
+        return roles;
+    }
+
+    public Set<UmsRole> MENTOR_ROLE() {
+        Set<UmsRole> roles = new HashSet<>();
+        roles.add(this.getRole("MENTOR"));
+        roles.add(this.getRole("USER"));
+        return roles;
     }
 }

@@ -28,4 +28,5 @@ public class UmsUserController {
         String token = jwtTokenUtil.generateToken(new DynamicUserDetail(umsMember));
         return CommonResult.success(token);
     }
+
 }

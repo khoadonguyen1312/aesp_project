@@ -37,6 +37,13 @@ public class UmsMember {
             referencedColumnName = "id"
     )
     private UmsUserData umsUserData;
+
+    @OneToOne
+    @JoinColumn(
+            name = "mentor_data_id",
+            referencedColumnName = "id"
+    )
+    private UmsMentorData umsMentorData;
     @Column(name = "password", nullable = false, length = 64)
     private String password;
 

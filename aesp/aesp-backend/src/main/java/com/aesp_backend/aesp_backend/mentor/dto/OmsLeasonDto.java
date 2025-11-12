@@ -13,7 +13,7 @@ public class OmsLeasonDto {
     private int orderIndex;
     private String description;
     private String title;
-    private byte[] video;
+
     private byte[] pdf;
     private List<OmsVocabularyDto> vocabularies;
 }

@@ -13,5 +13,4 @@ public class UmsAdminInfoResponse {
     private String login_time;
     private String created_at;
     private String status;
-
 }

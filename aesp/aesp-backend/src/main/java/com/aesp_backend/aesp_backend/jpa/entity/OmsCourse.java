@@ -15,12 +15,19 @@ public class OmsCourse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToMany(mappedBy = "omsCourse")
+    @OneToMany(mappedBy = "omsCourse", cascade = CascadeType.ALL)
     private List<OmsLeason> omsLeasons;
     private byte[] thumb;
     private String course_content;
     private String required_for_learning;
-    private byte video;
+
     private String description;
     private Long price;
+    @ManyToMany
+    @JoinTable(
+            name = "course_buyer",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "buyer_id")
+    )
+    private List<UmsMember> buyers;
 }

@@ -130,14 +130,17 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     @Override
     public Page<UmsMember> listUmsLeaner(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<UmsMember> umsMembers = umsMemberRepository.findByRole("MENTOR", pageable);
+        Page<UmsMember> umsMembers = umsMemberRepository.findAllUsers(pageable);
         logger.debug("Page size: {}", umsMembers.getSize());
         return umsMembers;
     }
 
     @Override
     public Page<UmsMember> listUmsMentor(int page, int size) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UmsMember> umsMembers = umsMemberRepository.findAllUsers(pageable);
+        logger.debug("Page size: {}", umsMembers.getSize());
+        return umsMembers;
     }
 
     @Override

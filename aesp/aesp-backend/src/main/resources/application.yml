@@ -1,7 +1,9 @@
 spring:
   application:
     name: aesp-backend
-
+  server:
+    port: 8080
+    address: 0.0.0.0
   datasource:
     url: jdbc:mysql://localhost:3306/aesp
     username: root

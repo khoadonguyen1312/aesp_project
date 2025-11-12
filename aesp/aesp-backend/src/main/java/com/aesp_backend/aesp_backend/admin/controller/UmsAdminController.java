@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
-
+@CrossOrigin(origins = "*")
 public class UmsAdminController {
     private final static Logger logger = LoggerFactory.getLogger(UmsAdminController.class);
     @Autowired
@@ -67,23 +67,30 @@ public class UmsAdminController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list-mentor")
-    public CommonResult<Data> list_mentor(@RequestParam int page, @RequestParam int size) {
+    public CommonResult<Page<UmsMember>> list_mentor(@RequestParam int page, @RequestParam int size) {
         logger.debug("dang lay danh sach list mentor");
 
-        Page<UmsMember> umsMembers = umsAdminService.listUmsLeaner(0, 2);
+        Page<UmsMember> umsMembers = umsAdminService.listUmsMentor(page, size);
         for (var i : umsMembers) {
             logger.debug(i.getUsername());
         }
         logger.debug(String.valueOf(umsMembers.getSize()));
-        return null;
+        return CommonResult.success(umsMembers);
 
 
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list-user")
-    public CommonResult<String> list_user(@RequestParam int page, @RequestParam int size) {
-        return null;
+    public CommonResult<Page<UmsMember>> list_user(@RequestParam int page, @RequestParam int size) {
+        logger.debug("dang lay danh sach list user");
+
+        Page<UmsMember> umsMembers = umsAdminService.listUmsLeaner(page, size);
+        for (var i : umsMembers) {
+            logger.debug(i.getUsername());
+        }
+        logger.debug(String.valueOf(umsMembers.getSize()));
+        return CommonResult.success(umsMembers);
     }
 
     /**
@@ -110,6 +117,7 @@ public class UmsAdminController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/lock-member")
+
     public CommonResult<String> lock_member(@RequestParam int id) {
         int lock = umsAdminService.lock_member(id);
         if (lock == 1) {

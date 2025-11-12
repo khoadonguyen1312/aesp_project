@@ -22,18 +22,29 @@ public interface UmsMemberRepository extends JpaRepository<UmsMember, Integer> {
 
     UmsMember findById(Long id);
 
+
     /**
-     * create page on role
-     *
-     * @param role
-     * @param pageable
-     * @return
+     * Tìm tất cả Mentor
+     * Bao gồm những user có role MENTOR, có thể kèm USER hoặc role khác
      */
-    @Query(
-            value = "SELECT DISTINCT m FROM UmsMember m JOIN m.umsRoles r WHERE r.role = :role",
-            countQuery = "SELECT COUNT(DISTINCT m) FROM UmsMember m JOIN m.umsRoles r WHERE r.role = :role"
-    )
-    Page<UmsMember> findByRole(@Param("role") String role, Pageable pageable);
+    @Query("""
+            SELECT DISTINCT m FROM UmsMember m
+            JOIN m.umsRoles r
+            WHERE r.role = 'MENTOR'
+            """)
+    Page<UmsMember> findAllMentors(Pageable pageable);
+
+    /**
+     * Tìm tất cả User bình thường
+     * Chỉ lấy những user có role duy nhất là USER
+     */
+    @Query("""
+            SELECT m FROM UmsMember m
+            JOIN m.umsRoles r
+            GROUP BY m
+            HAVING COUNT(r) = 1 AND MAX(r.role) = 'USER'
+            """)
+    Page<UmsMember> findAllUsers(Pageable pageable);
 
 }
 

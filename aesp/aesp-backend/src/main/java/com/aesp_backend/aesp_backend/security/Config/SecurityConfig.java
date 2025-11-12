@@ -41,7 +41,7 @@ public class SecurityConfig {
 
         httpSecurity.authorizeRequests().anyRequest().authenticated(); // bat cu request nao cung phai xac thuc
         httpSecurity.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
+        httpSecurity.cors();
         httpSecurity.exceptionHandling().accessDeniedHandler(dynamicAccessDeniedHandler).authenticationEntryPoint(dynamicAuthenticationEntryPoint);
         httpSecurity.addFilterBefore(jwtAuthencationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();

@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -127,7 +129,10 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Override
     public Page<UmsMember> listUmsLeaner(int page, int size) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UmsMember> umsMembers = umsMemberRepository.findByRole("MENTOR", pageable);
+        logger.debug("Page size: {}", umsMembers.getSize());
+        return umsMembers;
     }
 
     @Override

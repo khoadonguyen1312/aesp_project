@@ -14,5 +14,4 @@ public class UmsAdminInfoResponse {
     private String created_at;
     private String status;
 
-
 }

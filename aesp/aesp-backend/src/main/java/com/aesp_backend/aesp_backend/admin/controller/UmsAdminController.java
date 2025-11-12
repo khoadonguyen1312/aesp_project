@@ -13,6 +13,7 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -67,6 +68,13 @@ public class UmsAdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list-mentor")
     public CommonResult<Data> list_mentor(@RequestParam int page, @RequestParam int size) {
+        logger.debug("dang lay danh sach list mentor");
+
+        Page<UmsMember> umsMembers = umsAdminService.listUmsLeaner(0, 2);
+        for (var i : umsMembers) {
+            logger.debug(i.getUsername());
+        }
+        logger.debug(String.valueOf(umsMembers.getSize()));
         return null;
 
 

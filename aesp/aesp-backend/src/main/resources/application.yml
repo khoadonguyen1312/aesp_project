@@ -19,7 +19,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.aesp: DEBUG
+    com.aesp_backend.aesp_backend: DEBUG
 
 secure:
   #  cac url duoc security bo qua

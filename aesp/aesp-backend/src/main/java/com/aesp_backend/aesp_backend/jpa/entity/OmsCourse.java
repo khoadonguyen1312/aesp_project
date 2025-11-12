@@ -22,5 +22,5 @@ public class OmsCourse {
     private String required_for_learning;
     private byte video;
     private String description;
-
+    private Long price;
 }

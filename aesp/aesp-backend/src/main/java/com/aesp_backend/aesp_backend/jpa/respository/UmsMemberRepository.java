@@ -24,11 +24,16 @@ public interface UmsMemberRepository extends JpaRepository<UmsMember, Integer> {
 
     /**
      * create page on role
+     *
      * @param role
      * @param pageable
      * @return
      */
-    @Query("SELECT DISTINCT m FROM UmsMember m JOIN m.umsRoles r WHERE r.role = :role")
+    @Query(
+            value = "SELECT DISTINCT m FROM UmsMember m JOIN m.umsRoles r WHERE r.role = :role",
+            countQuery = "SELECT COUNT(DISTINCT m) FROM UmsMember m JOIN m.umsRoles r WHERE r.role = :role"
+    )
     Page<UmsMember> findByRole(@Param("role") String role, Pageable pageable);
+
 }
 

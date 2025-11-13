@@ -9,13 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class JwtTokenUtil {
     private String secretkey = "dz3DqaZ7AG6g4JTLsgKxYMUvhYk2GSqyG9WmUb17S6YmFwcZAtvi6jzidEtAtXubHeu5iJrG8paUBwwoaGgKl3";
-    private long expiration = 60 * 60;
+    private final long expiration = 60 * 60;
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_CREATED = "created";
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
@@ -39,15 +40,21 @@ public class JwtTokenUtil {
     public Claims getClaimsFromToken(String token) {
         Claims claims = null;
         try {
+            if (token.startsWith(tokenhead)) {
+                token = token.substring(tokenhead.length());
+            }
+
             claims = Jwts.parser()
                     .setSigningKey(secretkey)
                     .parseClaimsJws(token)
                     .getBody();
+
         } catch (Exception e) {
-            logger.error("có lỗi khi get claims" + e.toString());
+            logger.error("có lỗi khi get claims " + e.toString());
         }
         return claims;
     }
+
 
     public String getUsernameFormToken(String token) {
         String username = null;
@@ -101,30 +108,29 @@ public class JwtTokenUtil {
     }
 
     public String refreshHeadToken(String oldToken) {
-        if (StrUtil.isEmpty(oldToken)) {
-            return null;
-        }
-        String token = oldToken.substring(tokenhead.length());
-        if (StrUtil.isEmpty(token)) {
+        if (StrUtil.isEmpty(oldToken)) return null;
+
+        String token = oldToken.startsWith(tokenhead) ? oldToken.substring(tokenhead.length()).trim() : oldToken.trim();
+        if (StrUtil.isEmpty(token)) return null;
+
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(secretkey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            // Token hết hạn -> lấy claims từ exception
+            claims = e.getClaims();
+        } catch (Exception e) {
             return null;
         }
 
-        Claims claims = getClaimsFromToken(token);
-        if (claims == null) {
-            return null;
-        }
-
-        if (isTokenExpired(token)) {
-            return null;
-        }
-
-        if (tokenRefreshJustBefore(token, 30 * 60)) {
-            return token;
-        } else {
-            claims.put(CLAIM_KEY_CREATED, new Date());
-            return generateToken(claims);
-        }
+        // Cập nhật created và tạo token mới
+        claims.put(CLAIM_KEY_CREATED, new Date());
+        return generateToken(claims);
     }
+
 
     public String getROLEfromToken(String token) {
         return "ADMIN";

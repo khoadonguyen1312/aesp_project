@@ -1,5 +1,6 @@
 package com.aesp_backend.aesp_backend.admin;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,11 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UmsAdminParam {
-    @NotEmpty
+    @NotEmpty(message = "Tên đăng nhập không được để trống")
     private String username;
-    @NotEmpty
-    private String password;
-    @NotEmpty
-    private String email;
 
+    @NotEmpty(message = "Mật khẩu không được để trống")
+    private String password;
+
+    @NotEmpty(message = "Email không được để trống")
+    @Email(message = "Email không hợp lệ")
+    private String email;
 }

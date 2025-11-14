@@ -1,9 +1,16 @@
 // src/index.js
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 import App from "./App";
-import "antd/dist/reset.css"; // or "antd/dist/antd.css" nếu cần
+import "antd/dist/reset.css";
+import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>  // ← THÊM DÒNG NÀY
+);
 

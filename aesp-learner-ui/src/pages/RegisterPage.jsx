@@ -2,6 +2,19 @@ import React, { useState } from "react";
 import { Button, Form, Input, Select, Card, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 
+const handleRegister = async () => {
+  try {
+    const res = await axios.post("http://192.168.1.112:8080/admin/register", {
+      username,
+      email,
+      password,
+    });
+    alert("Đăng ký thành công!");
+  } catch (err) {
+    alert("Đăng ký thất bại!");
+  }
+};
+
 const { Option } = Select;
 
 function RegisterPage() {
@@ -30,7 +43,7 @@ function RegisterPage() {
       }}
     >
       <Card
-        title="📝 Đăng ký tài khoản"
+        title=" Đăng ký tài khoản"
         style={{
           width: 420,
           borderRadius: 12,
@@ -99,7 +112,7 @@ function RegisterPage() {
             </Button>
           </Form.Item>
 
-          {/* 🔹 Liên kết sang trang đăng nhập */}
+          {/*  Liên kết sang trang đăng nhập */}
           <div style={{ textAlign: "center" }}>
             Đã có tài khoản?{" "}
             <Link to="/login">Đăng nhập</Link>

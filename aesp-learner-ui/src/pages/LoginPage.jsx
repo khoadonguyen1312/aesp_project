@@ -1,26 +1,57 @@
+// src/pages/AdminLoginPage.jsx
 import React, { useState } from "react";
-import { Button, Form, Input, Card, message } from "antd";
-import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlice";
+import API from "../services/api"; // DÙNG API CHUNG
+import { useNavigate } from "react-router-dom";
+import { Card, Input, Button, message, Typography } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
-function LoginPage() {
+const { Title } = Typography;
+
+export default function AdminLoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const onFinish = async (values) => {
-    setLoading(true);
-    console.log("Login info:", values);
+  const handleLogin = async () => {
+    if (!email || !password) {
+      message.warning("Vui lòng nhập email và mật khẩu");
+      return;
+    }
 
+    setLoading(true);
     try {
-      // 🔹 Giả lập login
-      if (values.username === "baotung" && values.password === "123456") {
-        message.success("Đăng nhập thành công!");
-        localStorage.setItem("token", "fake-jwt-token");
-        navigate("/dashboard");
-      } else {
-        message.error("Sai tài khoản hoặc mật khẩu!");
+      const res = await API.post("/auth/login", { email, password });
+
+      if (res.data.code !== 200) {
+        throw new Error(res.data.message || "Đăng nhập thất bại");
       }
-    } catch (error) {
-      message.error("Lỗi hệ thống!");
+
+      const { token, user } = res.data.data;
+
+      // Lưu vào localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Cập nhật Redux
+      dispatch(setUser(user));
+
+      message.success("Đăng nhập Admin thành công!");
+
+      // CHUYỂN HƯỚNG THEO ROLE
+      if (user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        message.warning("Tài khoản không có quyền admin");
+        localStorage.clear();
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error(err);
+      message.error(err.message || "Sai email hoặc mật khẩu");
     } finally {
       setLoading(false);
     }
@@ -30,55 +61,61 @@ function LoginPage() {
     <div
       style={{
         display: "flex",
-        height: "100vh",
-        alignItems: "center",
         justifyContent: "center",
-        background:
-          "linear-gradient(135deg, #e0f7fa, #e3f2fd, #f3e5f5)",
+        alignItems: "center",
+        height: "100vh",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       }}
     >
       <Card
-        title="🎓 Đăng nhập hệ thống"
-        style={{
-          width: 360,
-          textAlign: "center",
-          borderRadius: 12,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        }}
+        style={{ width: 400, borderRadius: 16, boxShadow: "0 8px 32px rgba(0,0,0,0.2)" }}
+        bodyStyle={{ padding: "32px" }}
       >
-        <Form name="login" onFinish={onFinish} layout="vertical">
-          <Form.Item
-            label="Tên đăng nhập"
-            name="username"
-            rules={[{ required: true, message: "Vui lòng nhập username!" }]}
-          >
-            <Input placeholder="Nhập username" />
-          </Form.Item>
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <Title level={3} style={{ color: "#1890ff", margin: 0 }}>
+            Admin Login
+          </Title>
+          <p style={{ color: "#888", marginTop: 8 }}>
+            Quản trị hệ thống
+          </p>
+        </div>
 
-          <Form.Item
-            label="Mật khẩu"
-            name="password"
-            rules={[{ required: true, message: "Vui lòng nhập password!" }]}
-          >
-            <Input.Password placeholder="Nhập password" />
-          </Form.Item>
+        <Input
+          prefix={<UserOutlined />}
+          placeholder="Email (admin@aesp.com)"
+          size="large"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ marginBottom: 16 }}
+          onPressEnter={handleLogin}
+        />
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading} block>
-              Đăng nhập
-            </Button>
-          </Form.Item>
+        <Input.Password
+          prefix={<LockOutlined />}
+          placeholder="Mật khẩu (123456)"
+          size="large"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ marginBottom: 24 }}
+          onPressEnter={handleLogin}
+        />
 
-          {/* 🔹 Liên kết sang trang đăng ký */}
-          <div style={{ marginTop: 8 }}>
-            Chưa có tài khoản?{" "}
-            <Link to="/register">Đăng ký ngay</Link>
-          </div>
-        </Form>
+        <Button
+          type="primary"
+          size="large"
+          block
+          loading={loading}
+          onClick={handleLogin}
+          style={{ borderRadius: 8 }}
+        >
+          Đăng nhập Admin
+        </Button>
+
+        <div style={{ marginTop: 16, textAlign: "center", fontSize: 12, color: "#888" }}>
+          <p><strong>Tài khoản test:</strong></p>
+          <p>Email: <code>67@aesp.com</code> | Pass: <code>123456</code></p>
+        </div>
       </Card>
     </div>
   );
 }
-
-export default LoginPage;
-

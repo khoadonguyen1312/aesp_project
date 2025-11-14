@@ -1,36 +1,70 @@
+// src/pages/LoginPage.jsx
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/userSlice";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
-import { Button, Input, Card, message } from "antd";
+import { Card, Input, Button, message } from "antd";
 
-function Login() {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      message.warning("Vui lòng nhập đầy đủ email và mật khẩu");
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await API.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      dispatch(setUser(res.data.user));
-      navigate("/dashboard");
-    } catch {
+      const { token, user } = res.data;
+
+      // Lưu token vào localStorage
+      localStorage.setItem("token", token);
+
+      // Cập nhật Redux store
+      dispatch(setUser(user));
+
+      message.success("Đăng nhập thành công!");
+      // Chuyển hướng sang learner dashboard
+      navigate("/learner/dashboard");
+    } catch (err) {
+      console.error(err);
       message.error("Sai email hoặc mật khẩu");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <Card title="Learner Login" style={{ width: 350 }}>
-        <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Input.Password placeholder="Password" className="mt-2" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <Button type="primary" block className="mt-3" onClick={handleLogin}>Login</Button>
+      <Card title="Đăng nhập Học viên" style={{ width: 350 }}>
+        <Input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="mb-3"
+        />
+        <Input.Password
+          placeholder="Mật khẩu"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="mb-3"
+        />
+        <Button
+          type="primary"
+          block
+          loading={loading}
+          onClick={handleLogin}
+        >
+          Đăng nhập
+        </Button>
       </Card>
     </div>
   );
 }
-
-export default Login;

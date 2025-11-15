@@ -1,62 +1,117 @@
+// src/layouts/LearnerLayout.jsx
 import React from "react";
-import { Layout, Menu } from "antd";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, Navigate, useNavigate } from "react-router-dom";
+import { Layout, Menu, message } from "antd";
+import {
+  HomeOutlined,
+  BookOutlined,
+  UserOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
 
-const { Sider, Content, Header } = Layout;
+const { Content } = Layout;
 
 export default function LearnerLayout() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
+  // BẢO VỆ ROUTE
+  if (!token) {
+    message.warning("Vui lòng đăng nhập để tiếp tục");
+    return <Navigate to="/login" replace />;
+  }
+
+  // XỬ LÝ ĐĂNG XUẤT
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+    const confirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất?");
+    if (confirmed) {
+      localStorage.clear();
+      message.success("Đăng xuất thành công");
+      navigate("/login", { replace: true });
+    }
   };
+
+  // MENU ITEMS
+  const menuItems = [
+    {
+      key: "/learner",
+      icon: <HomeOutlined />,
+      label: "Dashboard",
+      onClick: () => navigate("/learner"),
+    },
+    {
+      key: "/learner/mycourse",
+      icon: <BookOutlined />,
+      label: "Khóa học của tôi",
+      onClick: () => navigate("/learner/mycourse"),
+    },
+    {
+      key: "/learner/profile",
+      icon: <UserOutlined />,
+      label: "Thông tin cá nhân",
+      onClick: () => navigate("/learner/profile"),
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Đăng xuất",
+      onClick: handleLogout,
+      danger: true,
+    },
+  ];
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      {/* Sidebar */}
-      <Sider breakpoint="lg" collapsedWidth="0">
+      {/* === SIDEBAR CỐ ĐỊNH === */}
+      <Layout.Sider
+        width={220}
+        style={{
+          position: "fixed",
+          height: "100vh",
+          left: 0,
+          top: 0,
+          zIndex: 10,
+          background: "#001529",
+          boxShadow: "2px 0 8px rgba(0,0,0,0.1)",
+        }}
+      >
         <div
           style={{
             height: 64,
             color: "#fff",
             fontSize: 18,
+            fontWeight: "bold",
             textAlign: "center",
             lineHeight: "64px",
-            background: "#1677ff",
-            marginBottom: 8,
+            background: "rgba(255,255,255,0.1)",
           }}
         >
-          Learner
+          AESP Learner
         </div>
+
         <Menu
           theme="dark"
           mode="inline"
-          items={[
-            { key: "1", label: "Dashboard", onClick: () => navigate("/learner/dashboard") },
-            { key: "2", label: "Hồ sơ cá nhân", onClick: () => navigate("/learner/profile") },
-            { key: "3", label: "Đăng xuất", onClick: handleLogout },
-          ]}
+          selectedKeys={[location.pathname]}
+          items={menuItems}
+          style={{ borderRight: 0 }}
         />
-      </Sider>
+      </Layout.Sider>
 
-      {/* Content */}
-      <Layout>
-        <Header style={{ background: "#fff", paddingLeft: 16 }}>
-          <h3>Hệ thống học viên</h3>
-        </Header>
+      {/* === NỘI DUNG CHÍNH === */}
+      <Layout style={{ marginLeft: 220, transition: "margin 0.2s ease" }}>
         <Content
           style={{
-            margin: "16px",
-            background: "#fff",
-            padding: 24,
-            borderRadius: 8,
+            padding: "24px",
+            background: "#f4f6f9",
+            minHeight: "100vh",
           }}
         >
-          <Outlet />
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <Outlet />
+          </div>
         </Content>
       </Layout>
     </Layout>
   );
 }
-

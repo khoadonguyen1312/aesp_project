@@ -1,137 +1,319 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Dropdown, Avatar, Badge, message, Spin } from 'antd';
-import { BookOpen, ShoppingCart, Award } from 'lucide-react';
-import { UserOutlined, BellOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import SidebarMenu from '../components/SidebarMenu';
-import { getCourses } from '../api/courseApi';
+// src/pages/LearnerDashboard.jsx
+import React, { useState, useEffect } from "react";
+import {
+  Layout,
+  Card,
+  Typography,
+  Space,
+  Tag,
+  Button,
+  Spin,
+  message,
+  Avatar,
+  Dropdown,
+  Badge,
+  Empty,
+} from "antd";
+import {
+  BookOutlined,
+  ShoppingCartOutlined,
+  FireOutlined,
+  UserOutlined,
+  BellOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import SidebarMenu from "../components/SidebarMenu";
+import { getCourses } from "../api/courseApi";
 
-const { Sider, Content, Header } = Layout;
+const { Title, Text } = Typography;
+const { Header, Content, Sider } = Layout;
 
 export default function LearnerDashboard() {
   const [collapsed, setCollapsed] = useState(false);
+  const [myCourses, setMyCourses] = useState([]); // Đọc từ localStorage
   const [availableCourses, setAvailableCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Khóa học của học viên (demo)
-  const myCourses = [
-    { id: 1, title: 'English Grammar Basics', progress: 75, instructor: 'John Smith', thumbnail: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400', status: 'In Progress' },
-    { id: 2, title: 'Business English', progress: 40, instructor: 'Sarah Johnson', thumbnail: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400', status: 'In Progress' },
-    { id: 3, title: 'IELTS Speaking', progress: 100, instructor: 'Michael Brown', thumbnail: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400', status: 'Completed' },
-  ];
+  // === LOAD KHÓA HỌC CỦA TÔI TỪ localStorage ===
+  const loadMyCourses = () => {
+    const saved = localStorage.getItem("myCourses");
+    if (saved) {
+      setMyCourses(JSON.parse(saved));
+    } else {
+      // Dữ liệu mẫu mặc định (nếu chưa có)
+      const defaultCourses = [
+        { id: 1, title: "English Grammar Basics", progress: 75, instructor: "John Smith" },
+        { id: 2, title: "Business English", progress: 40, instructor: "Sarah Johnson" },
+      ];
+      setMyCourses(defaultCourses);
+      localStorage.setItem("myCourses", JSON.stringify(defaultCourses));
+    }
+  };
 
-  // Load khóa học có sẵn từ API
+  // === LOAD KHÓA HỌC MỞ BÁN TỪ API ===
   useEffect(() => {
-    const loadAvailableCourses = async () => {
+    const loadCourses = async () => {
       setLoading(true);
       try {
         const data = await getCourses();
-        const formattedCourses = data.map(course => ({
-          id: course.id,
-          title: course.title,
-          price: `${course.price.toLocaleString('vi-VN')}đ`,
-          instructor: 'Giảng viên',
-          thumbnail: course.thumbnailUrl || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=400',
-        }));
-        setAvailableCourses(formattedCourses);
+        setAvailableCourses(data);
       } catch (err) {
-        message.error('Không thể tải danh sách khóa học: ' + err.message);
+        message.error("Lỗi tải khóa học – đang hiển thị dữ liệu mẫu");
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    loadAvailableCourses();
+    loadCourses();
   }, []);
 
-  // ✅ Chỉ dẫn tới /learner/courses/:id
-  const handleOpenCourse = (courseId) => {
-    navigate(`/learner/courses/${courseId}`);
+  // === LOAD MY COURSES KHI VÀO TRANG ===
+  useEffect(() => {
+    loadMyCourses();
+  }, []);
+
+  // === THEO DÕI THAY ĐỔI localStorage (khi mua ở tab khác) ===
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "myCourses") {
+        loadMyCourses();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // === XEM CHI TIẾT KHÓA HỌC ===
+  const handleOpenCourse = (id) => {
+    navigate(`/learner/courses/${id}`);
   };
 
+  // === ĐĂNG XUẤT ===
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    message.success('Đăng xuất thành công!');
-    navigate('/login');
+    localStorage.clear();
+    message.success("Đăng xuất thành công");
+    navigate("/login");
   };
 
+  // === MENU USER ===
   const menuItems = [
-    { key: 'profile', icon: <UserOutlined />, label: 'Hồ sơ cá nhân' },
-    { key: 'settings', icon: <SettingOutlined />, label: 'Cài đặt' },
-    { type: 'divider' },
-    { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', onClick: handleLogout, danger: true },
+    { key: "profile", icon: <UserOutlined />, label: "Hồ sơ cá nhân" },
+    { key: "settings", icon: <SettingOutlined />, label: "Cài đặt" },
+    { type: "divider" },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Đăng xuất",
+      onClick: handleLogout,
+      danger: true,
+    },
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed} breakpoint="lg" width={200} style={{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0 }}>
+    <Layout style={{ minHeight: "100vh" }}>
+      {/* === SIDEBAR === */}
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        width={220}
+        style={{
+          position: "fixed",
+          height: "100vh",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 10,
+          boxShadow: "2px 0 8px rgba(0,0,0,0.05)",
+        }}
+      >
         <SidebarMenu />
       </Sider>
 
-      <Layout style={{ marginLeft: collapsed ? 80 : 200, transition: 'all 0.2s' }}>
-        <Header style={{ position: 'sticky', top: 0, zIndex: 10, padding: '0 24px', background: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <Layout style={{ marginLeft: collapsed ? 80 : 220, transition: "margin 0.2s" }}>
+        {/* === HEADER === */}
+        <Header
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+            padding: "0 24px",
+            background: "#fff",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+            height: 64,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Space size={20}>
             <Badge count={3} size="small">
-              <div style={{ width: '36px', height: '36px', background: '#f3f4f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <BellOutlined style={{ fontSize: '18px', color: '#374151' }} />
-              </div>
+              <Button shape="circle" icon={<BellOutlined />} size="large" />
             </Badge>
-            <Dropdown menu={{ items: menuItems }} placement="bottomRight" arrow trigger={['click']}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f3f4f6', padding: '6px 12px 6px 6px', borderRadius: '24px', cursor: 'pointer' }}>
-                <Avatar size={40} icon={<UserOutlined />} style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: '2px solid #e5e7eb' }} />
-                <div style={{ color: '#111827', lineHeight: 1.2 }}>
-                  <div style={{ fontSize: '14px', fontWeight: 600 }}>Learner User</div>
-                  <div style={{ fontSize: '11px', color: '#6b7280' }}>Học viên</div>
+            <Dropdown menu={{ items: menuItems }} trigger={["click"]} placement="bottomRight">
+              <Space style={{ cursor: "pointer" }}>
+                <Avatar icon={<UserOutlined />} size="default" />
+                <div style={{ lineHeight: 1.2 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>Học viên</div>
+                  <Text type="secondary" style={{ fontSize: 12 }}>Online</Text>
                 </div>
-              </div>
+              </Space>
             </Dropdown>
-          </div>
+          </Space>
         </Header>
 
-        <Content style={{ background: '#f5f7fa', minHeight: 'calc(100vh - 64px)' }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 48px' }}>
-            {/* My Courses */}
-            <section style={{ marginBottom: '48px' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827', marginBottom: '24px', display: 'flex', alignItems: 'center' }}>
-                <BookOpen style={{ marginRight: '12px', color: '#3b82f6' }} />
+        {/* === NỘI DUNG CHÍNH === */}
+        <Content style={{ padding: "24px", background: "#f4f6f9", minHeight: "calc(100vh - 64px)" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+
+            {/* === KHÓA HỌC CỦA TÔI === */}
+            <section style={{ marginBottom: 48 }}>
+              <Title level={3} style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
+                <BookOutlined style={{ marginRight: 8, color: "#1890ff" }} />
                 Khóa học của tôi
-              </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '24px', justifyItems: 'center' }}>
-                {myCourses.map(course => (
-                  <div key={course.id} onClick={() => handleOpenCourse(course.id)} style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', cursor: 'pointer', width: '100%', maxWidth: '420px' }}>
-                    <div style={{ width: '100%', height: '180px', background: `url(${course.thumbnail}) center/cover no-repeat` }}></div>
-                    <div style={{ padding: '20px' }}>
-                      <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>{course.title}</h3>
-                      <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '12px' }}>{course.instructor}</p>
-                      <button style={{ width: '100%', padding: '12px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '10px', fontWeight: '600', cursor: 'pointer' }}>
-                        {course.status === 'Completed' ? 'Xem lại' : 'Tiếp tục học'}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              </Title>
+
+              {myCourses.length === 0 ? (
+                <Empty description="Bạn chưa đăng ký khóa học nào" style={{ margin: "40px 0" }} />
+              ) : (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                    gap: 20,
+                  }}
+                >
+                  {myCourses.map((c) => (
+                    <Card
+                      key={c.id}
+                      hoverable
+                      onClick={() => handleOpenCourse(c.id)}
+                      style={{ borderRadius: 12, cursor: "pointer" }}
+                    >
+                      <Space direction="vertical" size={12} style={{ width: "100%" }}>
+                        <Title level={5} style={{ margin: 0, fontSize: 16 }}>
+                          {c.title}
+                        </Title>
+                        <Text type="secondary" style={{ fontSize: 13 }}>
+                          {c.instructor}
+                        </Text>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <Text strong>{c.progress}% hoàn thành</Text>
+                          <Tag color={c.progress === 100 ? "success" : "processing"}>
+                            {c.progress === 100 ? "Hoàn thành" : "Đang học"}
+                          </Tag>
+                        </div>
+                      </Space>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </section>
 
-            {/* Available Courses */}
+            {/* === KHÓA HỌC ĐANG MỞ BÁN === */}
             <section>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827', marginBottom: '24px', display: 'flex', alignItems: 'center' }}>
-                <ShoppingCart style={{ marginRight: '12px', color: '#10b981' }} />
-                Khóa học có sẵn
-              </h2>
+              <Title level={3} style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
+                <ShoppingCartOutlined style={{ marginRight: 8, color: "#52c41a" }} />
+                Khóa học đang mở bán
+              </Title>
+
               {loading ? (
-                <div style={{ textAlign: 'center', padding: '60px 0' }}><Spin size="large" /></div>
+                <div style={{ textAlign: "center", padding: "60px 0" }}>
+                  <Spin size="large" tip="Đang tải khóa học..." />
+                </div>
+              ) : availableCourses.length === 0 ? (
+                <Empty description="Chưa có khóa học nào đang mở bán" style={{ margin: "40px 0" }} />
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px', justifyItems: 'center' }}>
-                  {availableCourses.map(course => (
-                    <div key={course.id} onClick={() => handleOpenCourse(course.id)} style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', cursor: 'pointer', width: '100%', maxWidth: '360px' }}>
-                      <div style={{ width: '100%', height: '160px', background: `url(${course.thumbnail}) center/cover no-repeat` }}></div>
-                      <div style={{ padding: '20px' }}>
-                        <h3 style={{ fontSize: '17px', fontWeight: 'bold', marginBottom: '8px' }}>{course.title}</h3>
-                        <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '12px' }}>{course.instructor}</p>
-                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>{course.price}</span>
-                      </div>
-                    </div>
-                  ))}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                    gap: 24,
+                  }}
+                >
+                  {availableCourses
+                    .filter((course) => !myCourses.some((c) => c.id === course.id)) // Ẩn khóa đã mua
+                    .map((course) => (
+                      <Card
+                        key={course.id}
+                        hoverable
+                        onClick={() => handleOpenCourse(course.id)}
+                        style={{
+                          borderRadius: 12,
+                          position: "relative",
+                          overflow: "hidden",
+                          transition: "transform 0.2s, box-shadow 0.2s",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+                      >
+                        {/* Badge Hot / Mới */}
+                        <div style={{ position: "absolute", top: 8, left: 8, zIndex: 1 }}>
+                          {course.isHot && (
+                            <Tag color="red" style={{ marginBottom: 4 }}>
+                              <FireOutlined /> Hot
+                            </Tag>
+                          )}
+                          {course.isNew && <Tag color="green">Mới</Tag>}
+                        </div>
+
+                        {/* Thumbnail */}
+                        <div
+                          style={{
+                            height: 160,
+                            background: course.thumbnailUrl
+                              ? `url(${course.thumbnailUrl}) center/cover no-repeat`
+                              : course.thumbnail
+                              ? `url(${course.thumbnail}) center/cover no-repeat`
+                              : "#e0e0e0",
+                            borderRadius: "8px 8px 0 0",
+                            backgroundColor: "#f5f5f5",
+                          }}
+                        />
+
+                        {/* Nội dung */}
+                        <div style={{ padding: 16 }}>
+                          <Title level={5} style={{ margin: "0 0 8px 0", fontSize: 16, lineHeight: 1.4 }}>
+                            {course.title}
+                          </Title>
+                          <Text type="secondary" style={{ fontSize: 13, display: "block", marginBottom: 12 }}>
+                            {course.instructor || "Giảng viên AESP"}
+                          </Text>
+
+                          {/* Giá + Nút mua */}
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              {course.originalPrice && course.originalPrice > course.price && (
+                                <Text delete type="secondary" style={{ marginRight: 8, fontSize: 13 }}>
+                                  {course.originalPrice.toLocaleString("vi-VN")}đ
+                                </Text>
+                              )}
+                              <Text strong style={{ fontSize: 18, color: "#f5222d" }}>
+                                {course.price.toLocaleString("vi-VN")}đ
+                              </Text>
+                            </div>
+
+                            <Button
+                              type="primary"
+                              danger
+                              size="middle"
+                              style={{ borderRadius: 6 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate("/learner/payment", { state: { course } });
+                              }}
+                            >
+                              Mua ngay
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
                 </div>
               )}
             </section>

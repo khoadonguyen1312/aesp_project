@@ -1,11 +1,21 @@
 // src/pages/ListUserPage.jsx
 import React, { useEffect, useState } from "react";
-import { Table, Button, message, Popconfirm, Input, Typography, Spin, Tag } from "antd";
+import {
+  Table,
+  Button,
+  message,
+  Popconfirm,
+  Input,
+  Space,
+  Spin,
+  Tag,
+  Empty,
+  Typography,
+} from "antd";
 import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import API from "../services/api";
 
 const { Title } = Typography;
-const { Search } = Input;
 
 function ListUserPage() {
   const [users, setUsers] = useState([]);
@@ -19,12 +29,12 @@ function ListUserPage() {
       if (res.data.code === 200) {
         setUsers(res.data.data.content || []);
       } else {
-        message.error(res.data.message || "Không lấy được danh sách user");
+        message.error(res.data.message || "Không thể tải danh sách");
       }
     } catch (err) {
-      message.error("Lỗi kết nối server!");
+      message.error("Lỗi kết nối server");
       console.error(err);
-      // Mock fallback nếu backend lỗi
+      // Dữ liệu giả nếu lỗi
       setUsers([
         { id: 1, username: "admin", email: "admin@aesp.com", fullName: "Quản trị viên", status: 1 },
       ]);
@@ -67,10 +77,11 @@ function ListUserPage() {
     }
   };
 
-  const filteredUsers = users.filter(u =>
-    u.username.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase()) ||
-    u.fullName.toLowerCase().includes(search.toLowerCase())
+  const filteredUsers = users.filter(
+    (u) =>
+      u.username?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase()) ||
+      u.fullName?.toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -82,59 +93,69 @@ function ListUserPage() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (s) => (
-        <Tag color={s === 1 ? "green" : "red"}>
-          {s === 1 ? "Hoạt động" : "Đã khóa"}
+      width: 100,
+      render: (status) => (
+        <Tag color={status === 1 ? "green" : "red"}>
+          {status === 1 ? "Hoạt động" : "Đã khóa"}
         </Tag>
       ),
     },
     {
       title: "Hành động",
       key: "action",
+      width: 180,
       render: (_, record) => (
-        <span style={{ display: "flex", gap: 8 }}>
+        <Space>
           {record.status === 1 ? (
-            <Popconfirm title="Khóa?" onConfirm={() => handleLock(record.id)}>
-              <Button type="primary" size="small">Khóa</Button>
+            <Popconfirm title="Khóa tài khoản?" onConfirm={() => handleLock(record.id)}>
+              <Button size="small" type="primary">Khóa</Button>
             </Popconfirm>
           ) : (
             <Popconfirm title="Mở khóa?" onConfirm={() => handleUnlock(record.id)}>
-              <Button type="default" size="small">Mở khóa</Button>
+              <Button size="small">Mở khóa</Button>
             </Popconfirm>
           )}
-          <Popconfirm title="Xóa?" onConfirm={() => handleDelete(record.id)}>
-            <Button danger size="small">Xóa</Button>
+          <Popconfirm title="Xóa vĩnh viễn?" onConfirm={() => handleDelete(record.id)}>
+            <Button size="small" danger>Xóa</Button>
           </Popconfirm>
-        </span>
+        </Space>
       ),
     },
   ];
 
   return (
-    <div style={{ padding: 24, background: "#f0f2f5", borderRadius: 8 }}>
-      <Title level={3} style={{ marginBottom: 16 }}>
-        Danh sách người dùng
-      </Title>
-      <Input
-        placeholder="Tìm theo username, email, họ tên..."
-        prefix={<SearchOutlined />}
-        style={{ marginBottom: 16, width: 300 }}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <Button icon={<ReloadOutlined />} onClick={fetchUsers} style={{ marginLeft: 8, marginBottom: 16 }}>
-        Tải lại
-      </Button>
+    <div style={{ padding: 24 }}>
+      <Title level={3}>Danh sách người dùng</Title>
+
+      <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <Input
+          placeholder="Tìm kiếm (username, email, họ tên)"
+          prefix={<SearchOutlined />}
+          style={{ width: 300 }}
+          onChange={(e) => setSearch(e.target.value)}
+          allowClear
+        />
+        <Button icon={<ReloadOutlined />} onClick={fetchUsers}>
+          Tải lại
+        </Button>
+      </div>
 
       {loading ? (
-        <Spin tip="Đang tải..." style={{ display: "block", margin: "50px auto" }} />
+        <div style={{ textAlign: "center", padding: 40 }}>
+          <Spin tip="Đang tải..." />
+        </div>
       ) : filteredUsers.length === 0 ? (
-        <Empty description="Không có dữ liệu" />
+        <Empty description="Không tìm thấy người dùng" />
       ) : (
         <Table
           dataSource={filteredUsers}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10, showSizeChanger: true }}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+          }}
           scroll={{ x: 800 }}
         />
       )}

@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 const handleRegister = async () => {
   try {
-    const res = await axios.post("http://192.168.1.112:8080/admin/register", {
+    const res = await axios.post("http://26.52.206.50/admin/register", {
       username,
       email,
       password,

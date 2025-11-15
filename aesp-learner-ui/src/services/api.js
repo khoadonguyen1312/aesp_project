@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://192.168.1.94:8080", // IP CỦA BẠN
+  baseURL: "http://26.52.206.50/", // IP CỦA BẠN
   timeout: 15000,
 });
 

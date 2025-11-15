@@ -1,12 +1,11 @@
 // src/pages/AdminDashboard.jsx
 import React, { useEffect, useState } from "react";
-import { Tabs, Table, Button, message, Spin, Popconfirm, Input, Typography, Badge, Tag } from "antd";
-import { SearchOutlined, ReloadOutlined, TeamOutlined, CrownOutlined } from "@ant-design/icons";
+import { Tabs, Table, Button, message, Spin, Popconfirm, Input, Badge, Space, Empty, Typography } from "antd";
+import { SearchOutlined, ReloadOutlined, CrownOutlined, TeamOutlined } from "@ant-design/icons";
 import API from "../services/api";
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
-const { Search } = Input;
 
 function AdminDashboard() {
   const [mentors, setMentors] = useState([]);
@@ -16,7 +15,7 @@ function AdminDashboard() {
   const [searchMentor, setSearchMentor] = useState("");
   const [searchUser, setSearchUser] = useState("");
 
-  // --- Fetch Mentors ---
+  // --- Fetch Data ---
   const fetchMentors = async () => {
     setLoadingMentor(true);
     try {
@@ -27,9 +26,7 @@ function AdminDashboard() {
         message.error(res.data.message || "Không lấy được danh sách mentor");
       }
     } catch (err) {
-      message.error("Lỗi kết nối server!");
-      console.error(err);
-      // Mock fallback nếu backend lỗi
+      message.error("Lỗi kết nối server");
       setMentors([
         { id: 101, username: "mentor_pro", email: "mentor@aesp.com", fullName: "Thầy Giáo Pro", status: 1 },
       ]);
@@ -38,7 +35,6 @@ function AdminDashboard() {
     }
   };
 
-  // --- Fetch Users ---
   const fetchUsers = async () => {
     setLoadingUser(true);
     try {
@@ -49,9 +45,7 @@ function AdminDashboard() {
         message.error(res.data.message || "Không lấy được danh sách user");
       }
     } catch (err) {
-      message.error("Lỗi kết nối server!");
-      console.error(err);
-      // Mock fallback nếu backend lỗi
+      message.error("Lỗi kết nối server");
       setUsers([
         { id: 1, username: "admin", email: "admin@aesp.com", fullName: "Quản trị viên", status: 1 },
       ]);
@@ -70,15 +64,14 @@ function AdminDashboard() {
     try {
       const res = await API.delete(`/admin/delete-member?id=${id}`);
       if (res.data.code === 200) {
-        message.success(res.data.message || "Xóa thành công");
+        message.success("Xóa thành công");
         fetchMentors();
         fetchUsers();
       } else {
         message.error(res.data.message || "Xóa thất bại");
       }
-    } catch (err) {
-      message.error("Lỗi kết nối server!");
-      console.error(err);
+    } catch {
+      message.error("Lỗi server");
     }
   };
 
@@ -86,15 +79,14 @@ function AdminDashboard() {
     try {
       const res = await API.get(`/admin/lock-member?id=${id}`);
       if (res.data.code === 200) {
-        message.success(res.data.message || "Khóa thành công");
+        message.success("Khóa thành công");
         fetchMentors();
         fetchUsers();
       } else {
-        message.error(res.data.message || "Khóa thất bại");
+        message.error("Khóa thất bại");
       }
-    } catch (err) {
-      message.error("Lỗi kết nối server!");
-      console.error(err);
+    } catch {
+      message.error("Lỗi server");
     }
   };
 
@@ -102,75 +94,76 @@ function AdminDashboard() {
     try {
       const res = await API.get(`/admin/unlock-member?id=${id}`);
       if (res.data.code === 200) {
-        message.success(res.data.message || "Mở khóa thành công");
+        message.success("Mở khóa thành công");
         fetchMentors();
         fetchUsers();
       } else {
-        message.error(res.data.message || "Mở khóa thất bại");
+        message.error("Mở khóa thất bại");
       }
-    } catch (err) {
-      message.error("Lỗi kết nối server!");
-      console.error(err);
+    } catch {
+      message.error("Lỗi server");
     }
   };
 
-  // --- Filter data ---
-  const filteredMentors = mentors.filter(m => 
-    m.username.toLowerCase().includes(searchMentor.toLowerCase()) || 
-    m.email.toLowerCase().includes(searchMentor.toLowerCase()) ||
-    m.fullName.toLowerCase().includes(searchMentor.toLowerCase())
+  // --- Filter ---
+  const filteredMentors = mentors.filter(m =>
+    [m.username, m.email, m.fullName].some(field =>
+      field?.toLowerCase().includes(searchMentor.toLowerCase())
+    )
   );
 
-  const filteredUsers = users.filter(u => 
-    u.username.toLowerCase().includes(searchUser.toLowerCase()) || 
-    u.email.toLowerCase().includes(searchUser.toLowerCase()) ||
-    u.fullName.toLowerCase().includes(searchUser.toLowerCase())
+  const filteredUsers = users.filter(u =>
+    [u.username, u.email, u.fullName].some(field =>
+      field?.toLowerCase().includes(searchUser.toLowerCase())
+    )
   );
 
-  // --- Common Columns ---
+  // --- Table Columns ---
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", width: 80 },
     { title: "Username", dataIndex: "username", key: "username" },
-    { title: "Full Name", dataIndex: "fullName", key: "fullName" },
+    { title: "Họ tên", dataIndex: "fullName", key: "fullName" },
     { title: "Email", dataIndex: "email", key: "email" },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      width: 100,
       render: (status) => (
-        <Badge status={status === 1 ? "success" : "error"} text={status === 1 ? "Hoạt động" : "Bị khóa"} />
+        <Badge status={status === 1 ? "success" : "error"} text={status === 1 ? "Hoạt động" : "Đã khóa"} />
       ),
     },
     {
       title: "Hành động",
-      key: "actions",
+      key: "action",
+      width: 180,
       render: (_, record) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <Popconfirm title="Xác nhận xóa?" onConfirm={() => handleDelete(record.id)}>
+        <Space>
+          <Popconfirm title="Xóa?" onConfirm={() => handleDelete(record.id)}>
             <Button danger size="small">Xóa</Button>
           </Popconfirm>
-
           {record.status === 1 ? (
-            <Popconfirm title="Xác nhận khóa?" onConfirm={() => handleLock(record.id)}>
+            <Popconfirm title="Khóa?" onConfirm={() => handleLock(record.id)}>
               <Button type="primary" size="small">Khóa</Button>
             </Popconfirm>
           ) : (
-            <Popconfirm title="Xác nhận mở khóa?" onConfirm={() => handleUnlock(record.id)}>
-              <Button type="default" size="small">Mở khóa</Button>
+            <Popconfirm title="Mở khóa?" onConfirm={() => handleUnlock(record.id)}>
+              <Button size="small">Mở khóa</Button>
             </Popconfirm>
           )}
-        </div>
+        </Space>
       ),
     },
   ];
 
   return (
-    <div style={{ padding: 24, minHeight: "100vh", background: "linear-gradient(135deg, #f6f9fc, #e9ecef)" }}>
-      <Title level={2} style={{ textAlign: "center", marginBottom: 32 }}>
-        Admin Dashboard
+    <div style={{ padding: 24 }}>
+      <Title level={3} style={{ textAlign: "center", marginBottom: 24 }}>
+        Quản lý hệ thống
       </Title>
 
-      <Tabs defaultActiveKey="mentors" tabBarGutter={30} centered>
+      <Tabs defaultActiveKey="mentors" centered>
+        {/* === Tab Mentors === */}
         <TabPane
           tab={
             <span>
@@ -179,18 +172,23 @@ function AdminDashboard() {
           }
           key="mentors"
         >
-          <Input
-            placeholder="Tìm theo username, email, họ tên..."
-            prefix={<SearchOutlined />}
-            style={{ marginBottom: 16, width: 300 }}
-            onChange={(e) => setSearchMentor(e.target.value)}
-          />
-          <Button icon={<ReloadOutlined />} onClick={fetchMentors} style={{ marginLeft: 8, marginBottom: 16 }}>
-            Tải lại
-          </Button>
+          <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <Input
+              placeholder="Tìm kiếm..."
+              prefix={<SearchOutlined />}
+              style={{ width: 280 }}
+              onChange={(e) => setSearchMentor(e.target.value)}
+              allowClear
+            />
+            <Button icon={<ReloadOutlined />} onClick={fetchMentors}>
+              Tải lại
+            </Button>
+          </div>
 
           {loadingMentor ? (
-            <Spin tip="Đang tải..." style={{ display: "block", margin: "50px auto" }} />
+            <div style={{ textAlign: "center", padding: 40 }}>
+              <Spin tip="Đang tải..." />
+            </div>
           ) : filteredMentors.length === 0 ? (
             <Empty description="Không có mentor" />
           ) : (
@@ -204,6 +202,7 @@ function AdminDashboard() {
           )}
         </TabPane>
 
+        {/* === Tab Users === */}
         <TabPane
           tab={
             <span>
@@ -212,20 +211,25 @@ function AdminDashboard() {
           }
           key="users"
         >
-          <Input
-            placeholder="Tìm theo username, email, họ tên..."
-            prefix={<SearchOutlined />}
-            style={{ marginBottom: 16, width: 300 }}
-            onChange={(e) => setSearchUser(e.target.value)}
-          />
-          <Button icon={<ReloadOutlined />} onClick={fetchUsers} style={{ marginLeft: 8, marginBottom: 16 }}>
-            Tải lại
-          </Button>
+          <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <Input
+              placeholder="Tìm kiếm..."
+              prefix={<SearchOutlined />}
+              style={{ width: 280 }}
+              onChange={(e) => setSearchUser(e.target.value)}
+              allowClear
+            />
+            <Button icon={<ReloadOutlined />} onClick={fetchUsers}>
+              Tải lại
+            </Button>
+          </div>
 
           {loadingUser ? (
-            <Spin tip="Đang tải..." style={{ display: "block", margin: "50px auto" }} />
+            <div style={{ textAlign: "center", padding: 40 }}>
+              <Spin tip="Đang tải..." />
+            </div>
           ) : filteredUsers.length === 0 ? (
-            <Empty description="Không có user" />
+            <Empty description="Không có người dùng" />
           ) : (
             <Table
               dataSource={filteredUsers}

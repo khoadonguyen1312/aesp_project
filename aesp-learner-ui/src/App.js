@@ -1,3 +1,4 @@
+// src/App.js – ĐÃ XÓA PaymentSuccess
 import React from "react";
 import {
   BrowserRouter,
@@ -6,59 +7,54 @@ import {
   Navigate,
 } from "react-router-dom";
 
-// Layouts
 import AdminLayout from "./layouts/AdminLayout";
 import LearnerLayout from "./layouts/LearnerLayout";
 
-// Auth Pages
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AdminRegisterPage from "./pages/AdminRegisterPage";
 
-// Admin Pages
 import ListUserPage from "./pages/ListUserPage";
-import AdminDashboardMock from "./pages/AdminDashboardMock";
-import DemoModePage from "./pages/DemoModePage"; // ĐÚNG
+import AdminDashboard from "./pages/AdminDashboard";
+import DemoModePage from "./pages/DemoModePage";
 
-// Learner Pages
 import LearnerDashboard from "./pages/LearnerDashboard";
+import MyCoursesPage from "./pages/MyCoursesPage";
 import CourseDetail from "./pages/CourseDetail";
 import Profile from "./pages/Profile";
+import PaymentPage from "./pages/PaymentPage";
+// XÓA: import PaymentSuccess
+
+const handleLogout = () => {
+  localStorage.clear();
+  window.location.href = "/login";
+};
 
 function App() {
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
-  };
-
   return (
     <BrowserRouter>
       <Routes>
-        {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin/register" element={<AdminRegisterPage />} />
-
-        {/* DEMO MODE – RA NGOÀI /admin */}
         <Route path="/demo" element={<DemoModePage />} />
 
-        {/* Admin */}
         <Route path="/admin" element={<AdminLayout onLogout={handleLogout} />}>
-          <Route index element={<AdminDashboardMock />} />
-          <Route path="dashboard" element={<AdminDashboardMock />} />
+          <Route index element={<AdminDashboard />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="list-user" element={<ListUserPage />} />
           <Route path="profile" element={<Profile />} />
         </Route>
 
-        {/* Learner */}
         <Route path="/learner" element={<LearnerLayout />}>
           <Route index element={<LearnerDashboard />} />
+          <Route path="mycourse" element={<MyCoursesPage />} />
           <Route path="profile" element={<Profile />} />
           <Route path="courses/:id" element={<CourseDetail />} />
+          <Route path="payment" element={<PaymentPage />} />
+          {/* XÓA: <Route path="payment/success" ... /> */}
         </Route>
 
-        {/* Redirect */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

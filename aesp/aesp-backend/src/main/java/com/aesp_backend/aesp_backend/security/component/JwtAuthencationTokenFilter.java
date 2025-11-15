@@ -39,7 +39,9 @@ public class JwtAuthencationTokenFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith(tokenHead)) {
             String token = authHeader.substring(tokenHead.length());
             String username = jwtTokenUtil.getUsernameFormToken(token);
-
+            logger.debug("co request duoc goi toi tu username :" + username);
+            logger.debug("request url :" + request.getRequestURI());
+            logger.debug("dia chi ip cua client la :" + request.getHeader("X-Forwarded-For"));
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = (UserDetails) dynamicUserDetailServices.loadUserByUsername(username);

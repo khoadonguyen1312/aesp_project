@@ -11,7 +11,7 @@ public interface UmsAdminService {
 
     String login(String username, String password);
 
-    UmsAdminInfoResponse info(int id);
+    UmsMember info(int id);
 
     UmsMember register(UmsAdminParam umsAdminParam);
 
@@ -34,5 +34,6 @@ public interface UmsAdminService {
     int lock_member(int id);
 
     int unlock_member(int id);
-    int update_password(int id,String password);
+
+    int update_password(int id, String password);
 }

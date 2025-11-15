@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface OmsCourseRepository extends JpaRepository<OmsCourse, Long> {
+public interface OmsCourseRepository extends JpaRepository<OmsCourse, Integer> {
     Optional<OmsCourse> findById(Long id);
 
     Page<OmsCourse> findAll(Pageable pageable);
@@ -19,4 +19,6 @@ public interface OmsCourseRepository extends JpaRepository<OmsCourse, Long> {
     @Query("SELECT c FROM OmsCourse c JOIN c.buyers b WHERE b.username = :username")
     Page<OmsCourse> findByBuyerUsername(@Param("username") String username, Pageable pageable);
 
+    @Query("SELECT c FROM OmsCourse c WHERE c.mentor.username = :username")
+    List<OmsCourse> findByMentorUsername(@Param("username") String username);
 }

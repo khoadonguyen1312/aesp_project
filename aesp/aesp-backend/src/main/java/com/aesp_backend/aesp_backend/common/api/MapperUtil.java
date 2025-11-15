@@ -28,7 +28,7 @@ public class MapperUtil {
         }
 
         if (course.getThumb() != null) {
-            courseDto.setThumb(course.getThumb());
+            courseDto.setThumb(String.valueOf(course.getThumb()));
         }
 
         return courseDto;
@@ -65,7 +65,7 @@ public class MapperUtil {
         }
 
         if (leason.getPdf() != null) {
-            dto.setPdf(leason.getPdf());
+            dto.setPdf(String.valueOf(leason.getPdf()));
         }
 
         return dto;

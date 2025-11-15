@@ -13,14 +13,15 @@ public class OmsLeason {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private Long id;
+    private int id;
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = true)
     private OmsCourse omsCourse;
     private int order_index;
     private String description;
     private String title;
-
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private byte[] pdf;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(

@@ -10,7 +10,7 @@ import java.util.List;
 public class OmsCourseDto {
 
     private String name;
-    private byte[] thumb;
+    private String thumb;
     private String courseContent;
     private String requiredForLearning;
 

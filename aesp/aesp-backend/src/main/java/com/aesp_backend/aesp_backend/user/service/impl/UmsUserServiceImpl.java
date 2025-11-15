@@ -8,9 +8,12 @@ import com.aesp_backend.aesp_backend.jpa.respository.OmsCourseRepository;
 import com.aesp_backend.aesp_backend.jpa.respository.UmsMemberRepository;
 import com.aesp_backend.aesp_backend.jpa.respository.UmsUserDataRepository;
 import com.aesp_backend.aesp_backend.security.JwtTokenUtil;
+import com.aesp_backend.aesp_backend.security.component.GetCurrentUmsMember;
 import com.aesp_backend.aesp_backend.user.dto.UmsUserRegisterParam;
 import com.aesp_backend.aesp_backend.user.service.UmsUserService;
 import org.apache.catalina.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -35,6 +39,9 @@ public class UmsUserServiceImpl implements UmsUserService {
     private UmsRoleCache umsRoleCache;
     @Autowired
     private OmsCourseRepository omsCourseRepository;
+    @Autowired
+    private GetCurrentUmsMember getCurrentUmsMember;
+    private Logger logger = LoggerFactory.getLogger(UmsUserServiceImpl.class);
 
     @Override
     public UmsMember register(UmsUserRegisterParam userRegisterParam) {
@@ -59,38 +66,42 @@ public class UmsUserServiceImpl implements UmsUserService {
 
     @Override
     public OmsCourse getCourse(int id) {
-        return omsCourseRepository.findById(Long.valueOf(id)).get();
+        Optional<OmsCourse> omsCourse = omsCourseRepository.findById(id);
+        if (omsCourse.isEmpty()) {
+            return null;
+        }
+        return omsCourse.get();
     }
 
     @Override
     public OmsCourse learnCourse(int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
-
-            UmsMember umsMember = umsMemberRepository.findByusername(username);
-            if (umsMember == null) {
-                return null;
-            }
-
-            OmsCourse omsCourse = omsCourseRepository.findById((long) id).orElse(null);
-            if (omsCourse == null) {
-                return null;
-            }
+        UmsMember umsMember = getCurrentUmsMember.getMember();
+        logger.debug(umsMember.getUsername());
 
 
-            if (omsCourse.getBuyers().contains(umsMember)) {
-                return null;
-            }
-
-
-            omsCourse.getBuyers().add(umsMember);
-            return omsCourseRepository.save(omsCourse);
+        if (umsMember == null) {
+            return null;
         }
 
-        return null;
+        OmsCourse omsCourse = omsCourseRepository.findById(id
+        ).orElse(null);
+        logger.debug(omsCourse.getName());
+        if (omsCourse == null) {
+            return null;
+        }
+
+
+        if (omsCourse.getBuyers().contains(umsMember)) {
+            logger.debug("user da mua khoa hoc nay");
+            return null;
+        }
+
+
+        omsCourse.getBuyers().add(umsMember);
+        return omsCourseRepository.save(omsCourse);
+
+
     }
 
     @Override
@@ -102,7 +113,7 @@ public class UmsUserServiceImpl implements UmsUserService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String username = userDetails.getUsername();
 
-            UmsMember umsMember = umsMemberRepository.findByusername(username);
+            UmsMember umsMember = umsMemberRepository.findByUsername(username);
             if (umsMember == null) {
                 return null;
             }

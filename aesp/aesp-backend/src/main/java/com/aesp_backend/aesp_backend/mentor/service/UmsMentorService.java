@@ -21,4 +21,5 @@ public interface UmsMentorService {
 
     UmsMember register(UmsMentorDto umsMentorDto);
 
+    List<OmsCourse> listCourse();
 }

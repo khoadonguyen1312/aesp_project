@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 public class DynamicUserDetailServices implements UserDetailsService {
     @Autowired
     private UmsMemberRepository umsMemberRepository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-      UmsMember umsMember= umsMemberRepository.findByusername(username);
-      if(umsMember==null)
-      {
-          return null;
-      }
+        UmsMember umsMember = umsMemberRepository.findByUsername(username);
+        if (umsMember == null) {
+            return null;
+        }
         return new DynamicUserDetail(umsMember);
     }
 }

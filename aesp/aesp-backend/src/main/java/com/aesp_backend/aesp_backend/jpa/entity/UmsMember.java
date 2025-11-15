@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -16,7 +17,7 @@ public class UmsMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
 
     @Column(name = "username", nullable = false, length = 64)
@@ -61,6 +62,7 @@ public class UmsMember {
     @Column(name = "status")
 
     private int status = 1;
-
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OmsCourse> courses;
 
 }

@@ -17,11 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -33,7 +37,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Override
     public UmsMember findByUsername(String username) {
-        return umsMemberRepository.findByusername(username);
+        return umsMemberRepository.findByUsername(username);
     }
 
     @Override
@@ -41,24 +45,28 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         return "";
     }
 
-    @Autowired
-    private UmsRoleCache umsRoleCache;
-
     @Override
-    public UmsAdminInfoResponse info(int id) {
-        logger.debug("tim info admin cho user voi id :" + id);
-
-        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
-
-        if (umsMember != null) {
-            return UmsAdminInfoResponse.builder().status(umsMember.getStatus() == 1 ? "active" : "no active").created_at(umsMember.getCreate_at().toString()).username(umsMember.getUsername()).email(umsMember.getEmail()).build();
-
+    public UmsMember info(int id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                UmsMember umsMember = umsMemberRepository.findByUsername(userDetails.getUsername());
+                if (umsMember != null) {
+                    return umsMember;
+                } else {
+                    logger.debug("khong tim thay user voi username: " + userDetails.getUsername());
+                }
+            }
         }
         return null;
     }
 
+    @Autowired
+    private UmsRoleCache umsRoleCache;
 
-    @Override
+
     public UmsMember register(UmsAdminParam umsAdminParam) {
         logger.debug("service admin đang đăng ký tài khoản");
         UmsMember umsMember = new UmsMember();
@@ -101,14 +109,25 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     }
 
     @Override
+    @Transactional
     public int deleteMemberAccount(int id) {
-        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
-        if (umsMember != null) {
-            umsMemberRepository.delete(umsMember);
-            logger.debug("xoa thanh cong UmsMember voi id: " + umsMember.getId() + "voi username: " + umsMember.getUsername());
+        logger.debug("Bắt đầu xóa member");
+
+        Optional<UmsMember> umsMemberOpt = umsMemberRepository.findById(id);
+        if (umsMemberOpt.isPresent()) {
+            UmsMember umsMember = umsMemberOpt.get();
+
+
+            umsMemberRepository.deleteCourseBuyerByMemberId(umsMember.getId());
+
+
+            umsMemberRepository.deleteById(umsMember.getId());
+
+            logger.debug("Xóa thành công UmsMember với id: " + umsMember.getId() + " username: " + umsMember.getUsername());
             return 1;
         }
 
+        logger.debug("Không xóa được UmsMember, id không tồn tại");
         return 0;
     }
 
@@ -138,7 +157,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     @Override
     public Page<UmsMember> listUmsMentor(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<UmsMember> umsMembers = umsMemberRepository.findAllUsers(pageable);
+        Page<UmsMember> umsMembers = umsMemberRepository.findAllMentors(pageable);
         logger.debug("Page size: {}", umsMembers.getSize());
         return umsMembers;
     }
@@ -147,12 +166,15 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     public int lock_member(int id) {
 
         logger.debug("service dang bat dau lock tai khoan member");
-        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
-        if (umsMember == null) {
+        Optional<UmsMember> umsMemberOptional = umsMemberRepository.findById(id);
+        if (umsMemberOptional.isEmpty()) {
             return 0;
         }
+        UmsMember umsMember = umsMemberOptional.get();
         if (umsMember.getStatus() == 1) {
             umsMember.setStatus(0);
+            umsMemberRepository.save(umsMember);
+            logger.debug("lock thanh cong user voi id :" + umsMember.getId() + "username:" + umsMember.getUsername());
             return 1;
         }
 
@@ -165,13 +187,17 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     public int unlock_member(int id) {
         logger.debug("dang bat dau unlock cho tai khoan ");
 
-        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
-        if (umsMember == null) {
+        Optional<UmsMember> umsMemberOptional = umsMemberRepository.findById(id);
+        if (umsMemberOptional.isEmpty()) {
+            logger.debug("khong tim thay tai khoan trong db");
             return 0;
 
         }
+        UmsMember umsMember = umsMemberOptional.get();
         if (umsMember.getStatus() == 0) {
             umsMember.setStatus(1);
+            umsMemberRepository.save(umsMember);
+            logger.debug("unlock thanh cong tai khoan voi id :" + id + "username :" + umsMember.getUsername());
             return 1;
         }
         return 0;
@@ -181,13 +207,13 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Override
     public int update_password(int id, String password) {
-        UmsMember umsMember = umsMemberRepository.findById(Long.valueOf(id));
+        Optional<UmsMember> umsMember = umsMemberRepository.findById(id);
 
-        if (umsMember == null) {
+        if (umsMember.isEmpty()) {
             return 0;
         }
-        umsMember.setPassword(password);
-        umsMemberRepository.save(umsMember);
+        umsMember.get().setPassword(password);
+        umsMemberRepository.save(umsMember.get());
         return 1;
     }
 }

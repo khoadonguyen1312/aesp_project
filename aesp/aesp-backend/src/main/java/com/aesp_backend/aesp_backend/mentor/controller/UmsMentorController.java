@@ -4,26 +4,28 @@ import com.aesp_backend.aesp_backend.admin.bo.DynamicUserDetail;
 import com.aesp_backend.aesp_backend.common.api.CommonResult;
 import com.aesp_backend.aesp_backend.jpa.entity.OmsCourse;
 import com.aesp_backend.aesp_backend.jpa.entity.UmsMember;
-import com.aesp_backend.aesp_backend.mentor.dto.OmsCourseDto;
-import com.aesp_backend.aesp_backend.mentor.dto.OmsLeasonDto;
-import com.aesp_backend.aesp_backend.mentor.dto.OmsVocabularyDto;
-import com.aesp_backend.aesp_backend.mentor.dto.UmsMentorDto;
+import com.aesp_backend.aesp_backend.mentor.dto.*;
 import com.aesp_backend.aesp_backend.mentor.service.UmsMentorService;
 import com.aesp_backend.aesp_backend.security.JwtTokenUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/mentor")
-@PreAuthorize("hasRole('MENTOR')")
+
 public class UmsMentorController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -31,7 +33,7 @@ public class UmsMentorController {
     private UmsMentorService umsMentorService;
 
     @PostMapping("/register")
-    public CommonResult<String> register(@Validated @RequestBody UmsMentorDto umsMentorDto) {
+    public CommonResult<String> register(@RequestBody UmsMentorDto umsMentorDto) {
 
         UmsMember umsMember = umsMentorService.register(umsMentorDto);
         if (umsMember == null) {
@@ -85,7 +87,7 @@ public class UmsMentorController {
 
 
                     if (lesson.getPdf() != null) {
-                        dto.setPdf(lesson.getPdf());
+                        dto.setPdf(String.valueOf(lesson.getPdf()));
                     }
 
                     return dto;
@@ -95,8 +97,11 @@ public class UmsMentorController {
 
             // thumb
             if (omsCourse.getThumb() != null) {
-                omsCourseDto.setThumb(omsCourse.getThumb());
+                omsCourseDto.setThumb(String.valueOf(omsCourse.getThumb()));
             }
+            omsCourseDto.setCourseContent(omsCourse.getCourse_content());
+
+            omsCourseDto.setRequiredForLearning(omsCourseDto.getRequiredForLearning());
 
             return CommonResult.success(omsCourseDto);
         }
@@ -116,15 +121,21 @@ public class UmsMentorController {
         return CommonResult.failed("khong xoa duoc course");
     }
 
-//    @PutMapping("/course/update")
-//    @PreAuthorize("hasRole('MENTOR')")
-//    public CommonResult<?> updateCourse(@RequestParam int id, @RequestBody OmsCourseDto omsCourseDto) {
-//        OmsCourse updatedCourse = umsMentorService.updateCourse(id, omsCourseDto);
-//        if (updatedCourse != null) {
-//            return CommonResult.success("Course updated successfully");
-//        } else {
-//            return CommonResult.failed("Course not found or update failed");
-//        }
-//    }
+    @PostMapping("/course/update")
+    @PreAuthorize("hasRole('MENTOR')")
+    public CommonResult<?> updateCourse(@RequestParam int id, @RequestBody OmsCourseDto omsCourseDto) {
 
+        OmsCourse updatedCourse = umsMentorService.updateCourse(id, omsCourseDto);
+        if (updatedCourse != null) {
+            return CommonResult.success("Course updated successfully");
+        } else {
+            return CommonResult.failed("Course not found or update failed");
+        }
+    }
+
+    @GetMapping("/list-course")
+    public CommonResult<List<CourseResponseDTO>> omsCourseList() {
+        List<OmsCourse> omsCourses = umsMentorService.listCourse();
+        return CommonResult.success(omsCourses.stream().map(CourseResponseDTO::new).collect(Collectors.toList()));
+    }
 }

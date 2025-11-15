@@ -14,6 +14,6 @@ public class OmsLeasonDto {
     private String description;
     private String title;
 
-    private byte[] pdf;
+    private String pdf;
     private List<OmsVocabularyDto> vocabularies;
 }

@@ -15,7 +15,7 @@ import java.util.Set;
 public class UmsMentorData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
     @OneToMany
     private Set<OmsCourse> omsCourses;
 

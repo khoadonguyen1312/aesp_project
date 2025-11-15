@@ -15,7 +15,7 @@ import javax.persistence.Id;
 public class OmsVocabulary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
     private String vocabulary;
 
     private String mean;

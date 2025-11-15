@@ -3,6 +3,7 @@ package com.aesp_backend.aesp_backend.security;
 
 import cn.hutool.core.util.StrUtil;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public class JwtTokenUtil {
     private String secretkey = "dz3DqaZ7AG6g4JTLsgKxYMUvhYk2GSqyG9WmUb17S6YmFwcZAtvi6jzidEtAtXubHeu5iJrG8paUBwwoaGgKl3";
-    private final long expiration = 60 * 60;
+    private final long expiration = 1000L * 60 * 60 * 24 * 365 * 10;
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_CREATED = "created";
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
@@ -49,12 +50,15 @@ public class JwtTokenUtil {
                     .parseClaimsJws(token)
                     .getBody();
 
+        } catch (ExpiredJwtException e) {
+            // Token hết hạn vẫn lấy claims
+            claims = e.getClaims();
+            logger.warn("Token đã hết hạn, trả về claims cũ: " + e.toString());
         } catch (Exception e) {
             logger.error("có lỗi khi get claims " + e.toString());
         }
         return claims;
     }
-
 
     public String getUsernameFormToken(String token) {
         String username = null;
@@ -113,18 +117,8 @@ public class JwtTokenUtil {
         String token = oldToken.startsWith(tokenhead) ? oldToken.substring(tokenhead.length()).trim() : oldToken.trim();
         if (StrUtil.isEmpty(token)) return null;
 
-        Claims claims;
-        try {
-            claims = Jwts.parser()
-                    .setSigningKey(secretkey)
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            // Token hết hạn -> lấy claims từ exception
-            claims = e.getClaims();
-        } catch (Exception e) {
-            return null;
-        }
+        Claims claims =getClaimsFromToken(token);
+
 
         // Cập nhật created và tạo token mới
         claims.put(CLAIM_KEY_CREATED, new Date());

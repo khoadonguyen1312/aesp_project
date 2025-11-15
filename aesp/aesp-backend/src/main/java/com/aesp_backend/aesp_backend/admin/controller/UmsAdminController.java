@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(origins = "*")
+
 public class UmsAdminController {
     private final static Logger logger = LoggerFactory.getLogger(UmsAdminController.class);
     @Autowired
@@ -53,9 +53,9 @@ public class UmsAdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/info")
-    public CommonResult<UmsAdminInfoResponse> info(@RequestParam int id) {
-        UmsAdminInfoResponse umsAdminInfoResponse = umsAdminService.info(id);
-        return umsAdminInfoResponse == null ? CommonResult.failed("không tìm thấy tài khoản trong hệ thống") : CommonResult.success(umsAdminInfoResponse);
+    public CommonResult<UmsMember> info(@RequestParam int id) {
+        UmsMember umsMember = umsAdminService.info(id);
+        return umsMember == null ? CommonResult.failed("không tìm thấy tài khoản trong hệ thống") : CommonResult.success(umsMember);
     }
 
     /**

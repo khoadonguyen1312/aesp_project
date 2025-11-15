@@ -15,7 +15,7 @@ import javax.persistence.Id;
 public class UmsUserData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
     private String fullname;
 
     private int age;

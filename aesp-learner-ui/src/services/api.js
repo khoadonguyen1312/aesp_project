@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://192.168.1.94:8080", // IP CỦA BẠN
+  baseURL: "http://localhost:8080", // IP CỦA BẠN
   timeout: 15000,
 });
 
@@ -10,6 +10,8 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
+    console.log(axios.getUri)
+    console.log(token)
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -17,9 +19,13 @@ API.interceptors.request.use((config) => {
 
 // XỬ LÝ LỖI 401 → TỰ ĐĂNG XUẤT
 API.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    console.log(res.data.code)
+    return res;
+  },
   (err) => {
-    if (err.response?.status === 401) {
+    console.log(err.data)
+    if (err.data===un) {
       localStorage.clear();
       window.location.href = "/login";
       message.error("Phiên đăng nhập hết hạn");

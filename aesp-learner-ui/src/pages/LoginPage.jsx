@@ -6,43 +6,44 @@ import API from "../services/api"; // DÙNG API CHUNG
 import { useNavigate } from "react-router-dom";
 import { Card, Input, Button, message, Typography } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 const { Title } = Typography;
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+const basse_url =""
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!username || !password) {
       message.warning("Vui lòng nhập email và mật khẩu");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await API.post("/auth/login", { email, password });
-
+      const res = await axios.post("http://localhost:8080/token/login-get-token", { username, password });
+  console.log("RES.DATA:", res.data);
       if (res.data.code !== 200) {
         throw new Error(res.data.message || "Đăng nhập thất bại");
       }
 
-      const { token, user } = res.data.data;
-
+      const { token, role } = res.data.data;
+message.success(res.data)
       // Lưu vào localStorage
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      // localStorage.setItem("user", JSON.stringify(user));
 
       // Cập nhật Redux
-      dispatch(setUser(user));
+      // dispatch(setUser(user));
 
       message.success("Đăng nhập Admin thành công!");
 
       // CHUYỂN HƯỚNG THEO ROLE
-      if (user.role === "admin") {
+      if (role === "admin") {
         navigate("/admin/dashboard");
       } else {
         message.warning("Tài khoản không có quyền admin");
@@ -84,8 +85,8 @@ export default function AdminLoginPage() {
           prefix={<UserOutlined />}
           placeholder="Email (admin@aesp.com)"
           size="large"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           style={{ marginBottom: 16 }}
           onPressEnter={handleLogin}
         />

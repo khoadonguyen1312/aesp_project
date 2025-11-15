@@ -59,7 +59,8 @@ function ListUserPage() {
 
   const handleDelete = async (id) => {
     try {
-      await API.delete(`/admin/delete-member?id=${id}`);
+    const res =  await API.delete(`/admin/delete-member?id=${id}`);
+    console.log(res.data)
       message.success("Đã xóa");
       fetchUsers();
     } catch {

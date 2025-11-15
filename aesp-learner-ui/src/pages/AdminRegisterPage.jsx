@@ -16,7 +16,7 @@ function AdminRegisterPage() {
       console.log("Payload gửi lên:", payload);
 
       const res = await axios.post(
-        "http://192.168.1.112:8080/admin/register",
+        "http://localhost:8080/admin/register",
         payload
       );
 
@@ -91,13 +91,7 @@ function AdminRegisterPage() {
             <Input.Password />
           </Form.Item>
 
-          <Form.Item
-            label="Họ và tên"
-            name="fullName"
-            rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
-          >
-            <Input />
-          </Form.Item>
+     
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading} block>
